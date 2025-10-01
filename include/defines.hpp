@@ -185,7 +185,8 @@ volatile bool valueJsumoE      = false;       //  AUTO | Definicao do Jsumo Esqu
 volatile bool valueJsumoD      = false;       //  AUTO | Definicao do Jsumo Direito
 
 bool inicializado              = false;       //  DOIS | Flag para validar a inicializacao 
-bool isConfiguring             = false;       //  AUTO |Flag para controlar o modo de configuracao
+bool hasteForcada              = true;        //  DOIS | Define se a haste deve ficar ligada aberta
+bool isConfiguring             = false;       //  AUTO | Flag para controlar o modo de configuracao
 bool running                   = false;       //  AUTO | Indica se o robo esta lutando
 bool ready                     = false;       //  AUTO | Usada para testar se o robo recebe IR
 bool seeing                    = false;       //  AUTO | Usada para indicar se o robo ve o outro

@@ -132,6 +132,24 @@ void modoRC() {
 
 #pragma endregion
 
+//========================================//Switch Haste//=======================================//
+
+#pragma region SWITCH HASTE
+
+        // Permite movimentacao em V
+        } else if (PS4.Down() && !hasteForcada) {
+            vTaskDelay(pdMS_TO_TICKS(50));
+            hasteForcada = true;
+            vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
+        
+        // Permite movimentacao em C
+        } else if (PS4.Down()) {
+            vTaskDelay(pdMS_TO_TICKS(50));
+            hasteForcada = false;
+            vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
+
+#pragma endregion
+
 //==============================//Limitador da potencia dos motores//============================//
 
 #pragma region LIMITADOR

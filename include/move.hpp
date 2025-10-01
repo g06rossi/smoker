@@ -202,8 +202,10 @@ void openServo(void *pvParameters) {
         vTaskDelay(pdMS_TO_TICKS(150));       // Tempo para garantir mov 90°. Datasheet -> 150ms
 
         // Relaxa o servo
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, 0);
-        ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
+        if (!hasteForcada) {
+            ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, 0);
+            ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
+        }
     }
 }
 
