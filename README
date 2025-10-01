@@ -1,0 +1,122 @@
+//===============================================================================================//
+//===========================================//SOBRE//===========================================//
+//===============================================================================================//
+
+Smoker v2.5.3
+Código desenvolvido para o robô de Mini Sumô Smoker da TamanduTech
+Desenvolvido por Giovanni Rossi, 2025
+Ultima atualização: 03/09/2025
+
+O código segue a estrutura:
+
+src
+|_ main.cpp           -> Arquivo principal
+
+include
+|_ defines.hpp        -> Definicoes globais
+|_ functions.hpp      -> Funcoes auxiliares
+|_ move.hpp           -> Funcoes de movivmentacao de motores
+|_ sensor_task.hpp    -> Funcoes de sensoreamento
+|_ auto_mode.hpp      -> Logica basica do modo AUTO
+|_ strategies.hpp     -> Estrategias iniciais do modo AUTO
+|_ combar.hpp         -> Loop pos estretegia inicial do modo AUTO
+|_ rc_mode.hpp        -> Interpretacao do controle de PS4 no modo RC
+
+Se for usar, saiba que todo mundo é Smoker-based!
+
+Só o Frigo vai ler isso. Oi, Frigo!
+
+//=========================================//Workshop//==========================================//
+
+Foi realizado um workshop para explicar a estrutura logica basica dos codigos AUTO e RC que usamos
+no sumo. A gravacao, os slides e um codigo de exemplo podem ser encontrados no link abaixo
+
+https://drive.google.com/drive/folders/1rxQE-ccWV4NvQnA2Qr_AQARCJeVbv1AR?usp=sharing
+
+//====================================//Adições e correções//====================================//
+
+1. Solucao do reset causado em combatLogicTask -> if(!running) break; quebrava o loop e deixava
+o ponteiro apontando para o vazio. Substituido por if(!running) continue;
+
+//===============================================================================================//
+//==========================================//A FAZER//==========================================//
+//===============================================================================================//
+
+1. modoBusca e modoQuebrado estão priorizando a lateral (combat)
+2. Woodpecker e slowSearch estão com velocidades e delays esquisitos (strategies -> STRATS COMPLEXAS)
+
+//===============================================================================================//
+//=====================================//VERSOES ANTERIORES//====================================//
+//===============================================================================================//
+
+- v2.5.1
+  1. O arquivo defense.hpp foi renomeado para combat.hpp para ficar mais intuitivo
+  2. A sensorTask foi renomeada para combatLogicTask para ficar mais intuitiva
+  3. Aplicacao de FSM para os modos de luta mais complexos
+  4. Adicao de vTaskSuspend(NULL); no loop para suspender a tarefa
+  5. Adicao de !INFO para localizar comentarios de orientacoes para desenvolvimento 
+- v2.5.0
+  1. Reorganizacao do codigo para utilizar o LOOP
+  2. Reestruturacao da escrita das logicas de estrategias sequenciais AUTO com struct
+- v2.4.1
+  1. Estratégias AUTO novas: Woodpecker e Slow Search
+  2. Loops AUTO novos: Busca, Giro e Quebrado
+  3. Correções em funções para o AUTO que interferem nas novas adições: delayMsSensor, 
+    definicoesBaseBT, verificarEstrategia, printCommands, readSensors, sensorTask, handleIRCommand
+  4. Criação de novas funções para o AUTO: switchSensor, AnnihilationModeLed, delayMsAttacked
+  5. Criação das REGIONS para facilitar a navegação
+  6. Criação de MACROS para o RC
+- v2.4.0
+  1. Remoção do código OTA por completo
+  2. Movimentação do Servomotor por ledc assim como os motores
+- v2.3.0
+  1. Substituicao do analogWrite por ledc_set_duty com PWM_FREQ 490Hz como o Arduino
+    - OBS -> Motores tem uma indutância interna e por isso a corrente não é alterada 
+        instantaneamente, mas leva um tempo para atingir o valor máximo ou mínimo. Em altas 
+        frequências, o período é muito curto, então às vezes não há tempo suficiente para a corrente
+        atingir o valor desejado. Além disso, o chaveamento dos MOSFETs da ponte H também causa uma
+        perda de energia diretamente proporcional à frequência, que aumentam o calor e reduzem a 
+        eficiência. Mais informações em https://tinyurl.com/3xna36xr e https://tinyurl.com/3afbmmmt
+  2. Criacao do ota.hpp para passar codigo por WiFi ao selecionar o 6 no controle remoto
+  3. Criacao de um vetor para armazenar estrategias iniciais personalizadas com até 20 movimentos 
+    para debug
+  4. Desenvolvimento de novos comentários e do arquivo Log
+- v2.2.0
+  1. Adicao dos LEDs enderecaveis e das funcoes setupLeds, setLeds, clearLeds, validaSetup, 
+  indicarSensores
+  2. Definicao de funcoes logaritmicas para as curvas no RC
+- v2.1.7
+  Tentativa de correcao da responsividade do modo AUTO por meio de
+  1. Ativacao do modo ofensivo ao ver com dois JSumos ao inves de tres
+  Tentativa de correcao da responsividade de ambos os modos por meio de
+  1. Ajuste da funcao de parar e frear motores para os diferentes comandos
+  2. Ajustes nas tarefas de abrir e fechar servomotor
+- v2.1.6
+  Tentativa de correcao da responsividade do modo AUTO por meio de
+  1. Criacao de tasks separadas para handleIRCommand, estrategiaLutaBT
+  2. Criacao de openServo e closeServo com memoria alocada
+  3. Melhor distribuicao entre os nucleos para tarefas simultaneas
+  Tentativa de correcao da responsividade do modo RC por meio de
+  1. Reducao do delay para abrir a haste
+  2. Diminuicao do numero de vezes que se altera a velocidade 
+  3. Ajuste dos Macros de Curvão e Curvinha para melhor ergonomia e resposta
+- v2.1.5
+  1. Selecao do modo de luta pelo controle remoto
+- v2.1.4
+  1. stopRobot -> ESP.restart() estava com problemas para desligar o motor, a nova estrutura cria 
+  um "falso reset" ao entrar em um loop de prioridade superior que continuamente para os motores
+  2. Substituicao de ledcwrite por digitalWrite -> apesar de mais rapido, o ledcwrite nao utiliza 
+  toda a potencia possivel dos motores mesmo alterando a frequencia para 5, 10 e 20 kHz
+  3. Modo RC -> criacao de funcoes que alteram a potencia nas curvas conforme  a intensidade de 
+  acionamento do controle
+  4. Modo ofensivo e defensivo alterados de acordo com uma estrategia de competicoes mexicanas
+- v2.1.3
+  Modo RC testado. Modo AUTO com problemas de motor
+- v2.1.2
+  Modo RC testado. Modo AUTO com problemas de movimentacao
+- v2.1.1
+  1. Implementacao de melhorias para a velocidade de processamento e resposta -> delayMsSensor; 
+  delayUs; vTaskDelay(pdMS_TO_TICKS()); digitalWriteHigh;digitalWriteLow; IRAM_ATTR stopRobot; 
+  (GPIO.in >> pin) & 0x1; setMotors; stopMotors; IRAM_ATTR readSensors; setupSensorTask
+- v2.1.0
+  1. Codigo base para a v2 da PCB 2025
