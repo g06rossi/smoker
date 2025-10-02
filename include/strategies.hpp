@@ -196,17 +196,17 @@ const StrategyStep vzinhoDireita[] = {
 
 // Movimentacao em V (3/4 dohyo)
 const StrategyStep vzaoEsquerda[] = {
-    { 255,-255,  75},
+    {-255, 255,  90},
     { 255, 255, 155},
-    {-255, 255, 177},
+    { 255,-255, 177},
     { 255, 255, 125},
     {   0,   0,   0}
 };
 
 const StrategyStep vzaoDireita[] = {
-    {-255, 255,  50},
+    { 255,-255,  90},
     { 255, 255, 200},
-    { 255,-255, 125},
+    {-255, 255, 125},
     { 255, 255, 125},
     {   0,   0,   0}
 };

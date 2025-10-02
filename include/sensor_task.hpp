@@ -157,7 +157,7 @@ void combatLogicTask(void *pvParameters) {
         if ((valueJsumoF + valueJsumoE + valueJsumoD >= 4) ||  
             (avancosIteracao > maxAvancosIteracao)         || 
             (numIteracoes > maxIteracoesW)                 ||
-            (numIteracoes < maxIteracoesS)                 ||
+            (numIteracoes > maxIteracoesS)                 ||
             (millis() - tempoCombat > 5000)
         ) {
 

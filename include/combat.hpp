@@ -11,7 +11,7 @@
 #include <move.hpp>                           // Funcoes de movivmentacao de motores
 
 #define velUltimoLado          64             // Velocidade de giro para o ultimo lado visto
-#define velLadoAtual           172            // Velocidade de giro para o lado atual
+#define velLadoAtual           132            // Velocidade de giro para o lado atual
 #define velFrenteRapida        192            // Velocidade de avanco rapido
 #define velFrenteLenta         54             // Velocidade de avanco lento
 #define acrescimo              32             // Acrescimo de velocidade para um dos motores

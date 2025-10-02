@@ -50,7 +50,7 @@ const char* VAMPETA            = "78:1c:9b:f6:29:fc";
 
 void modoRC() {
     // Tenta conectar ao controle PS4 e debuga conexao pelo Serial Monitor
-    if (PS4.begin(FUEGUITO)) {
+    if (PS4.begin(SMOKER)) {
         Serial.println("Bluetooth inicializado, aguardando controle...");
 
         while (!PS4.isConnected()) {

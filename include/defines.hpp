@@ -148,7 +148,7 @@ VAMPETA
 #pragma region COMUNICACAO
 
 #define LED_PIN                2              //  DOIS | LED padrão ESP32 IO2
-#define IR_RECIEVE_PIN         13             //  DOIS | Sensor IR ESP32 IO13
+#define IR_RECIEVE_PIN         5              //  DOIS | Sensor IR ESP32 IO13
 
 #define LEDS_ENDERECAVEIS_PIN  33             //  DOIS | LEDs enderecaveis ESP32 IO33
 #define NUM_LEDS               5              //  DOIS | Numero de LEDs enderecaveis
@@ -171,7 +171,7 @@ VAMPETA
 
 #define SENSOR_IR_D            4              //  AUTO | Sensor IR direito ESP32 IO4
 #define SENSOR_IR_F            23             //  AUTO | Sensor IR frontal ESP32 IO23
-#define SENSOR_IR_E            5              //  AUTO | Sensor IR esquerdo ESP32 IO5
+#define SENSOR_IR_E            13             //  AUTO | Sensor IR esquerdo ESP32 IO5
 
 #pragma endregion
 
