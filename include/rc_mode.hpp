@@ -24,20 +24,22 @@ volatile int r2                = 0;           // Valor do gatilho direito do PS4
 volatile int l2                = 0;           // Valor do gatilho esquerdo do PS4 (L2)
 volatile int direcao           = 0;           // Valor do direcional esquerdo do PS4 em X (LStickX)
 
+bool primeiraAceleracao        = true;        // Indica que o robo nunca andou para frente
+
 /*
 !INFO | Ultimos MAC Addresses conhecidos dos robos
 -----------------------------------
 Atualizar RESSACA, SHENLONG e VAMPETA
 */
 
-const char* SMOKER             = "78:1c:3c:f6:29:fc";
+const char* SMOKER             = "a0:b7:65:0f:74:a4";
 const char* ARRUELA            = "8c:4f:00:3d:10:f0";
 const char* BRIGA              = "7c:9e:bd:fb:83:80";
 const char* FUEGO              = "78:1c:3c:f6:24:70";
 const char* FUEGUITO           = "8c:4f:00:3d:27:00";
-const char* RESSACA            = "9b:1c:3c:f6:29:fc";
+const char* RESSACA            = "a0:b7:65:0f:7b:e0";
 const char* SHENLONG           = "78:9b:3c:f6:29:fc";
-const char* TSUNAMI            = "a0:b7:65:0f:7c:e0";
+const char* TSUNAMI            = "74:29:af:c1:35:cc";
 const char* VAMPETA            = "78:1c:9b:f6:29:fc";
 
 #pragma endregion
@@ -89,7 +91,14 @@ void modoRC() {
 #pragma region TURBO
 
         if (PS4.Cross()) {
-            moverMotores(255, 255);
+            moverMotores(195, 195);
+            if (primeiraAceleracao) {
+                vTaskDelay(pdMS_TO_TICKS(5));
+                xTaskNotifyGive(openServoHandle);
+                hasteAbaixada = true;
+                primeiraAceleracao = false;
+                vTaskDelay(pdMS_TO_TICKS(50));
+            }
             continue;
 
 #pragma endregion
@@ -204,6 +213,7 @@ void modoRC() {
         } else if (PS4.Left() > 0 && switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
+            hasteAbaixada = true;
             moverMotores(-255, 255);          // Gira para a esquerda
             vTaskDelay(pdMS_TO_TICKS(40));
             moverMotores(255, 255);           // Anda para frente
@@ -218,6 +228,7 @@ void modoRC() {
         } else if (PS4.Right() > 0 && switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
+            hasteAbaixada = true;
             moverMotores(255, -255);          // Gira para a direita
             vTaskDelay(pdMS_TO_TICKS(40));
             moverMotores(255, 255);           // Anda para frente
@@ -238,6 +249,7 @@ void modoRC() {
         } else if (PS4.Left() > 0 && !switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
+            hasteAbaixada = true;
             moverMotores(-255, 255);          // Gira para a esquerda
             vTaskDelay(pdMS_TO_TICKS(50));
             moverMotores(255, 120);           // Curva fechada para a direita
@@ -250,6 +262,7 @@ void modoRC() {
         } else if (PS4.Right() > 0 && !switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
+            hasteAbaixada = true;
             moverMotores(255, -255);          // Gira para a direita 
             vTaskDelay(pdMS_TO_TICKS(50));
             moverMotores(120, 255);           // Curva fechada para a esquerda 
@@ -298,6 +311,13 @@ void modoRC() {
 
                 // Define a velocidade base (frente ou re)
                 if (r2 > 10) {                // Gatilho direito (frente)
+                    if (primeiraAceleracao) {
+                        vTaskDelay(pdMS_TO_TICKS(5));
+                        xTaskNotifyGive(openServoHandle);
+                        hasteAbaixada = true;
+                        primeiraAceleracao = false;
+                        vTaskDelay(pdMS_TO_TICKS(50));
+                    }
                     int velocidade = map(r2, 10, 255, 0, limiteVelocidade);
                     velocidadeEsquerda = velocidade;
                     velocidadeDireita = velocidade;

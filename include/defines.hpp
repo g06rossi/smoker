@@ -100,21 +100,21 @@ Definicao de pinos e configuracoes
 !INFO | Ultimos pinos conhecidos dos robos
 -----------------------------------
               LP     LN     RP     RN
-SMOKER        17     16     19     18
-ARRUELA
+SMOKER        16     17     18     19
+ARRUELA       17     16     19     18
 BRIGA         19     18     16     17
-FUEGO 
-FUEGUITO
-RESSACA
-SHENLONG 
-TSUNAMI 
-VAMPETA  
+FUEGO         19     18     17     16
+FUEGUITO      19     18     16     17
+RESSACA       17     16     19     18
+SHENLONG      19     18     16     17
+TSUNAMI       19     18     17     16
+VAMPETA       18     19     17     16
 */
 
-#define LEFT_POS_PIN           17             //  DOIS | Ponte H M1 A_IN_2 ESP32 IO18
-#define LEFT_NEG_PIN           16             //  DOIS | Ponte H M1 A_IN_1 ESP32 IO19
-#define RIGHT_POS_PIN          19             //  DOIS | Ponte H M2 B_IN_2 ESP32 IO16
-#define RIGHT_NEG_PIN          18             //  DOIS | Ponte H M2 B_IN_1 ESP32 IO17
+#define LEFT_POS_PIN           16             //  DOIS | Ponte H M1 A_IN_2 ESP32 IO18
+#define LEFT_NEG_PIN           17             //  DOIS | Ponte H M1 A_IN_1 ESP32 IO19
+#define RIGHT_POS_PIN          18             //  DOIS | Ponte H M2 B_IN_2 ESP32 IO16
+#define RIGHT_NEG_PIN          19             //  DOIS | Ponte H M2 B_IN_1 ESP32 IO17
 
 #define LEFT_POS_CHANNEL       LEDC_CHANNEL_6 //  DOIS | Canal PWM positivo esquerdo
 #define LEFT_NEG_CHANNEL       LEDC_CHANNEL_7 //  DOIS | Canal PWM negativo esquerdo
@@ -148,7 +148,7 @@ VAMPETA
 #pragma region COMUNICACAO
 
 #define LED_PIN                2              //  DOIS | LED padrão ESP32 IO2
-#define IR_RECIEVE_PIN         5              //  DOIS | Sensor IR ESP32 IO13
+#define IR_RECIEVE_PIN         13              //  DOIS | Sensor IR ESP32 IO13
 
 #define LEDS_ENDERECAVEIS_PIN  33             //  DOIS | LEDs enderecaveis ESP32 IO33
 #define NUM_LEDS               5              //  DOIS | Numero de LEDs enderecaveis
@@ -171,7 +171,7 @@ VAMPETA
 
 #define SENSOR_IR_D            4              //  AUTO | Sensor IR direito ESP32 IO4
 #define SENSOR_IR_F            23             //  AUTO | Sensor IR frontal ESP32 IO23
-#define SENSOR_IR_E            13             //  AUTO | Sensor IR esquerdo ESP32 IO5
+#define SENSOR_IR_E            5              //  AUTO | Sensor IR esquerdo ESP32 IO5
 
 #pragma endregion
 
