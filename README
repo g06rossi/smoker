@@ -19,7 +19,7 @@ include
 |_ sensor_task.hpp    -> Funcoes de sensoreamento
 |_ auto_mode.hpp      -> Logica basica do modo AUTO
 |_ strategies.hpp     -> Estrategias iniciais do modo AUTO
-|_ combar.hpp         -> Loop pos estretegia inicial do modo AUTO
+|_ combat.hpp         -> Loop pos estretegia inicial do modo AUTO
 |_ rc_mode.hpp        -> Interpretacao do controle de PS4 no modo RC
 
 Se for usar, saiba que todo mundo é Smoker-based!
