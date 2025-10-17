@@ -40,7 +40,7 @@ const char* FUEGUITO           = "8c:4f:00:3d:27:00";
 const char* RESSACA            = "a0:b7:65:0f:7b:e0";
 const char* SHENLONG           = "78:9b:3c:f6:29:fc";
 const char* TSUNAMI            = "74:29:af:c1:35:cc";
-const char* VAMPETA            = "78:1c:9b:f6:29:fc";
+const char* VAMPETA            = "7c:9e:bd:fb:83:64";
 
 #pragma endregion
 
