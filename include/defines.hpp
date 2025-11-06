@@ -111,8 +111,8 @@ TSUNAMI       19     18     17     16
 VAMPETA       18     19     17     16
 */
 
-#define LEFT_POS_PIN           16             //  DOIS | Ponte H M1 A_IN_2 ESP32 IO18
-#define LEFT_NEG_PIN           17             //  DOIS | Ponte H M1 A_IN_1 ESP32 IO19
+#define LEFT_POS_PIN           17             //  DOIS | Ponte H M1 A_IN_2 ESP32 IO18
+#define LEFT_NEG_PIN           16             //  DOIS | Ponte H M1 A_IN_1 ESP32 IO19
 #define RIGHT_POS_PIN          19             //  DOIS | Ponte H M2 B_IN_2 ESP32 IO16
 #define RIGHT_NEG_PIN          18             //  DOIS | Ponte H M2 B_IN_1 ESP32 IO17
 
@@ -244,7 +244,7 @@ struct StrategyStep {                         //  AUTO | Struct para os comandos
    int delayMs;
 };
 
-SelecionouModo selecionouModo  = radioControlado;
+SelecionouModo selecionouModo  = naoSelecionado;
 ModoLuta modoLuta              = ataque;
 Direction direction            = esquerda;
 DirecaoAdversario ultimoLado   = nuncaVisto;

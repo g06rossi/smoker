@@ -20,6 +20,7 @@
 volatile bool switchCxV        = false;       // Switch definido para controlar MACRO usado
 volatile bool velLimitada      = true;        // Switch definido pra limitar a velocidade do motor
 int limiteVelocidade           = 180;         // Limite de velocidade do motor
+int zonaMorta                  = 20;          // Zona desconsiderada do controle de PS4
 volatile int r2                = 0;           // Valor do gatilho direito do PS4 (R2)
 volatile int l2                = 0;           // Valor do gatilho esquerdo do PS4 (L2)
 volatile int direcao           = 0;           // Valor do direcional esquerdo do PS4 em X (LStickX)
@@ -287,15 +288,15 @@ void modoRC() {
             direcao = PS4.LStickX();          // Armazena o valor em X do Direcional Esquerdo
 
             // Se nenhum gatilho estiver pressionado (considerando a zona morta)
-            if (r2 <= 10 && l2 <= 10) {
+            if (r2 <= zonaMorta && l2 <= zonaMorta) {
                 velocidadeEsquerda = 0;
                 velocidadeDireita = 0;
 
                 // Se os gatilhos estao parados, verifica se o analogico quer girar
-                if (direcao < -10) {          // Curva pra esquerda parado
+                if (direcao < -zonaMorta) {          // Curva pra esquerda parado
                     velocidadeEsquerda = -int(limiteCurva * (abs(direcao) / limiteCurva));
                     velocidadeDireita = int(limiteCurva * (abs(direcao) / limiteCurva));
-                } else if (direcao > 10) {    // Curva pra direita parado
+                } else if (direcao > zonaMorta) {    // Curva pra direita parado
                     velocidadeEsquerda = int(limiteCurva * (abs(direcao) / limiteCurva));
                     velocidadeDireita = -int(limiteCurva * (abs(direcao) / limiteCurva));
                 }
@@ -310,7 +311,7 @@ void modoRC() {
             } else {                          // Pelo menos um gatilho pressionado
 
                 // Define a velocidade base (frente ou re)
-                if (r2 > 10) {                // Gatilho direito (frente)
+                if (r2 > zonaMorta) {                // Gatilho direito (frente)
                     if (primeiraAceleracao) {
                         vTaskDelay(pdMS_TO_TICKS(5));
                         xTaskNotifyGive(openServoHandle);
@@ -318,11 +319,11 @@ void modoRC() {
                         primeiraAceleracao = false;
                         vTaskDelay(pdMS_TO_TICKS(50));
                     }
-                    int velocidade = map(r2, 10, 255, 0, limiteVelocidade);
+                    int velocidade = map(r2, zonaMorta, 255, 0, limiteVelocidade);
                     velocidadeEsquerda = velocidade;
                     velocidadeDireita = velocidade;
                 } else {                      // Gatilho esquerdo (re)
-                    int velocidade = map(l2, 10, 255, 0, limiteVelocidade);
+                    int velocidade = map(l2, zonaMorta, 255, 0, limiteVelocidade);
                     velocidadeEsquerda = -velocidade;
                     velocidadeDireita = - int(coefReverse * velocidade);
                 }
@@ -334,24 +335,26 @@ void modoRC() {
 #pragma region GATILHOS E CURVAS
 
                 // Aplica a curva sobre a velocidade existente
-                if (direcao < -10) {          // Curva pra esquerda em movimento
+                if (direcao < -zonaMorta) {          // Curva pra esquerda em movimento
                     // Reduz a velocidade da roda interna (esquerda para frente, direita para re)
-                    if (r2 > 10) 
+                    if (r2 > zonaMorta) 
                         velocidadeEsquerda *= (1.0 - (abs(direcao) * coefAtenuacao) / 255.0);
                     else 
                         velocidadeDireita *= (1.0 - (abs(direcao) * coefAtenuacao) / 255.0);
 
-                } else if (direcao > 10) {    // Curva pra direita em movimento
+                } else if (direcao > zonaMorta) {    // Curva pra direita em movimento
                     // Reduz a velocidade da roda interna (direita para frente, esquerda para re)
-                    if (r2 > 10) 
+                    if (r2 > zonaMorta) 
                         velocidadeDireita *= (1.0 - (abs(direcao) * coefAtenuacao) / 255.0);
                     else 
                         velocidadeEsquerda *= (1.0 - (abs(direcao) * coefAtenuacao) / 255.0);
                 }
             }
-            moverMotores(velocidadeEsquerda, velocidadeDireita);        
+            Serial.println("//=====//Controle Desconectado//=====//");
+            moverMotores(velocidadeEsquerda, velocidadeDireita);
         }
     }
+    brakeMotors();                            // Se desconectar, freia o motor
 }
 
 #pragma endregion
