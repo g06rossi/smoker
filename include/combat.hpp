@@ -495,7 +495,7 @@ void slowSearch() {
         case 6:
             moverMotores(200, -200);
             tempoPassoSearch = millis();
-            passoSearch = 5;
+            passoSearch = 7;
             break;
 
         case 7:
