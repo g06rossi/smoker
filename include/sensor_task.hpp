@@ -83,9 +83,9 @@ void IRAM_ATTR readSensors() {
         portEXIT_CRITICAL_ISR(&sensorMux);    // Fim da estrutura critica
     } else {
         portENTER_CRITICAL_ISR(&sensorMux);   // Indica estrutura critica: prioridade de execucao
-        valueJsumoF = (GPIO.in >> SENSOR_IR_F) & 0x1;
-        valueJsumoD = (GPIO.in >> SENSOR_IR_D) & 0x1;
-        valueJsumoE = (GPIO.in >> SENSOR_IR_E) & 0x1;
+        valueJsumoF = !((GPIO.in >> SENSOR_IR_F) & 0x1);
+        valueJsumoD = !((GPIO.in >> SENSOR_IR_D) & 0x1);
+        valueJsumoE = !((GPIO.in1.val >> (SENSOR_IR_E - 32)) & 0x1);
         portEXIT_CRITICAL_ISR(&sensorMux);    // Fim da estrutura critica
     }
 
@@ -98,6 +98,13 @@ void IRAM_ATTR readSensors() {
     vTaskNotifyGiveFromISR(combatLogicHandle, &xHigherPriorityTaskWoken);
     if (xHigherPriorityTaskWoken) {           // Se uma tarefa de maior prioridade foi despertada
         portYIELD_FROM_ISR();                 // Forca desligamento do robo (prioridade maior)
+    }
+}
+
+void testSensors() {
+    for(;;) {
+        SerialBT.printf("SENSOR -> E: %d, F: %d, D: %d\n", valueJsumoE, valueJsumoF, valueJsumoD);
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 

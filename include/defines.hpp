@@ -131,7 +131,7 @@ VAMPETA       18     19     17     16
 
 #pragma region PINOS SERVO
 
-#define SERVOMOTOR_PIN         26             //  DOIS | Servomotor da haste ESP32 IO32
+#define SERVOMOTOR_PIN         23             //  DOIS | Servomotor da haste ESP32 porta 23
 
 #define SERVO_LEDC_CHANNEL     LEDC_CHANNEL_0 //  DOIS | Canal do PWM do servo
 #define SERVO_TIMER            LEDC_TIMER_0   //  DOIS | Timer do PWM do servo
@@ -170,13 +170,13 @@ VAMPETA       18     19     17     16
 #define JSUMO_E_PIN            39             //  AUTO | JSumo esquerdo ESP32 IO39
 
 #define SENSOR_IR_D            4              //  AUTO | Sensor IR direito ESP32 IO4
-#define SENSOR_IR_F            23             //  AUTO | Sensor IR frontal ESP32 IO23
-#define SENSOR_IR_E            5              //  AUTO | Sensor IR esquerdo ESP32 IO5
+#define SENSOR_IR_F            26             //  AUTO | Sensor IR frontal ESP32 IO23
+#define SENSOR_IR_E            32             //  AUTO | Sensor IR esquerdo ESP32 IO5
 
 #pragma endregion
 
 //===================================//Variaveis utilizadas//====================================//
-
+//BRIEL ESTEVE AQUI
 #pragma region VARIAVEIS
 
 volatile bool hasteAbaixada    = false;       //  DOIS | Define se a haste do robo vai ser abaixada

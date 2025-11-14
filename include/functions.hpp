@@ -215,7 +215,9 @@ void printCommands() {
         "'n'        | Estrategia em Vzinho\n"
         "'a'        | Estrategia em Vzao\n"
         "'g'        | Estrategia Giro\n"
+        "'y'        | Seleciona configuracao personalizada\n"
         "'d'        | Defensivo puro\n"
+        "'s'        | Teste de sensor\n"        
         "-----------|---------------------------------------\n"
         "'='        | Movimento Reto\n"
         "'<'        | Movimento para o lado Esquerdo\n"
@@ -237,7 +239,6 @@ void printCommands() {
         "-----------|---------------------------------------\n"
         "'z'        | Inicia configuracao personalizada\n"
         "'.'        | Finaliza configuracao personalizada\n"
-        "'y'        | Seleciona configuracao personalizada\n"
         "-----------|---------------------------------------\n"
         "'E'        | Conferir estrategia\n"
         "'0'        | Finaliza configuracao\n"
@@ -271,8 +272,9 @@ void verificarEstrategia(char comando) {
         case 'n': SerialBT.println("//=====//EM VZINHO SELECIONADO//=====//"); break;
         case 'a': SerialBT.println("//=====//EM VZAO SELECIONADO//=====//"); break;
         case 'g': SerialBT.println("//=====//GIRO SELECIONADO//=====//"); break;
-        case 'd': SerialBT.println("//=====//DEFENSIVO PURO SELECIONADO//=====//"); break;
         case 'y': SerialBT.println("//=====//PERSONALIZADA SELECIONADA//=====//"); break;
+        case 'd': SerialBT.println("//=====//DEFENSIVO PURO SELECIONADO//=====//"); break;
+        case 's': SerialBT.println("//=====//TESTE SENSOR SELECIONADO//=====//"); break;
         default: break;
     }
 }

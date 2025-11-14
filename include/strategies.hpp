@@ -360,6 +360,12 @@ void estrategiaLutaBT(char comando) {
             moverMotores(0, 0);
             break;
 
+        case 's':
+            SerialBT.println("//=====//TESTE SENSOR INICIADO//=====//");
+            if (modoFurtivo) xTaskNotifyGive(swSensorHandle);
+            testSensors();
+            break;
+
         // Caso padrao para nao ficar sem fazer nada se o caractere enviado for invalido
         default:
             SerialBT.println("//=====//ESTRATEGIA INVALIDA: INICIANDO DEFENSIVO//=====//");
