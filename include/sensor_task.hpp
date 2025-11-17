@@ -12,6 +12,8 @@
 #include <move.hpp>                           // Funcoes de movivmentacao de motores
 #include <combat.hpp>                         // Loop pos estretegia inicial do modo AUTO
 
+bool JSumoLigado = true;
+
 #pragma endregion
 
 //===============================================================================================//
@@ -59,11 +61,12 @@ void irMonitorTask(void *pvParameters) {      // Monitora a cada 100 ms se o rob
 void switchSensor(void *pvParameters) {
     for (;;) {
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        if (modoFurtivo) {                    // Desliga o transistor e desconecta GND dos JSumos
+        if (JSumoLigado) {                    // Desliga o transistor e desconecta GND dos JSumos
             GPIO.out_w1tc = ((uint32_t)1 << TRANSISTOR_SENSOR_PIN);
-
+            JSumoLigado = false;
         } else {                              // Liga o transistor e conecta GND dos JSumos
             GPIO.out_w1ts = ((uint32_t)1 << TRANSISTOR_SENSOR_PIN);
+            JSumoLigado = true;
         }
     }
 }
@@ -75,7 +78,7 @@ void switchSensor(void *pvParameters) {
 #pragma region LEITURA SENSOR
 
 void IRAM_ATTR readSensors() {
-    if(!modoFurtivo) {
+    if(JSumoLigado) {
         portENTER_CRITICAL_ISR(&sensorMux);   // Indica estrutura critica: prioridade de execucao
         valueJsumoF = (GPIO.in1.val >> (JSUMO_F_PIN - 32)) & 0x1;
         valueJsumoD = (GPIO.in1.val >> (JSUMO_D_PIN - 32)) & 0x1;

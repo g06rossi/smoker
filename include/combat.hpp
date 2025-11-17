@@ -184,7 +184,7 @@ void modoBusca() {
                 break;
 
             case 1:                           // Passo 2: Esperar os 50ms terminarem
-                if (millis() - tempoPassoBusca > 50) passoBusca = 2;
+                if (millis() - tempoPassoBusca > 125) passoBusca = 2;
                 break;
 
             case 2:                           // Passo 3: Parar por 500ms
@@ -194,7 +194,7 @@ void modoBusca() {
                 break;
 
             case 3:                           // Passo 4: Esperar os 500ms terminarem
-                if (millis() - tempoPassoBusca > 250) {
+                if (millis() - tempoPassoBusca > 1000) {
                     passoBusca = 0;          // Reinicia a sequencia
                     avancosIteracao++;        // Acresce a contagem de avancos da iteracao
                     avancosTotais++;          // Acresce a contagem de avancos totais
@@ -258,7 +258,7 @@ void modoQuebrado() {
                 break;
 
             case 1:                           // Passo 2: Esperar a primeira sambada esquerda
-                if (millis() - tempoPassoQuebrado > 40) {
+                if (millis() - tempoPassoQuebrado > 85) {
                     passoQuebrado = 2;
                 }
                 break;
@@ -270,7 +270,7 @@ void modoQuebrado() {
                 break;
 
             case 3:                           // Passo 4: Esperar a sambada direita
-                if (millis() - tempoPassoQuebrado > 80) {
+                if (millis() - tempoPassoQuebrado > 170) {
                     passoQuebrado = 4;
                 }
                 break;
@@ -282,15 +282,15 @@ void modoQuebrado() {
                 break;
 
             case 5:                           // Passo 6: Esperar a sambada esquerda
-                if (millis() - tempoPassoQuebrado > 80) {
-                    if (leituraFrente > maxLeituraFrente) {
+                if (millis() - tempoPassoQuebrado > 170) {
+                    if (leituraFrente < maxLeituraFrente) {
                         passoQuebrado = 6;
                     } else modoLuta = ataque;
                 }
                 break;
 
             case 6:                           // Passo 7: Se avancou menos de x vezes, avancar
-                if (leituraFrente > maxLeituraFrente) {
+                if (leituraFrente < maxLeituraFrente) {
                     moverMotores(velFrenteLenta, velFrenteLenta);
                     tempoPassoQuebrado = millis();
                     passoQuebrado = 7;
@@ -299,7 +299,7 @@ void modoQuebrado() {
                 break;
 
             case 7:                           // Passo 8: Tempo de avanco
-                if (millis() - tempoPassoQuebrado > 50) {
+                if (millis() - tempoPassoQuebrado > 125) {
                     leituraFrente++;
                     passoQuebrado = 8;
                 }
@@ -312,7 +312,7 @@ void modoQuebrado() {
                 break;
 
             case 9:                           // Passo 10: Esperar parado
-                if (millis() - tempoPassoQuebrado > 500) {
+                if (millis() - tempoPassoQuebrado > 1000) {
                     passoQuebrado = 6;       // Reinicia a sequencia de avanco
                 }
                 break;

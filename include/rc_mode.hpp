@@ -350,7 +350,6 @@ void modoRC() {
                         velocidadeEsquerda *= (1.0 - (abs(direcao) * coefAtenuacao) / 255.0);
                 }
             }
-            Serial.println("//=====//Controle Desconectado//=====//");
             moverMotores(velocidadeEsquerda, velocidadeDireita);
         }
     }

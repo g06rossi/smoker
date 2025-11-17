@@ -244,9 +244,9 @@ const StrategyStep giroDireita[] = {
 
 // Executa as estrategias sequenciais e personalizadas
 void executarEstrategia(const StrategyStep strategySequence[]) {
-    // Lida com haste e sensor quando necessario
+    // Lida com haste quando necessario
     if (hasteAbaixada) xTaskNotifyGive(openServoHandle);
-    if (modoFurtivo) xTaskNotifyGive(swSensorHandle);
+    xTaskNotifyGive(swSensorHandle);          // Entra no modo furtivo
 
     // Loop de passos -> sai do loop quando o delay for igual a 0
     for (int i = 0; strategySequence[i].delayMs > 0; ++i) {
@@ -254,11 +254,7 @@ void executarEstrategia(const StrategyStep strategySequence[]) {
         vTaskDelay(pdMS_TO_TICKS(strategySequence[i].delayMs));
     }
 
-    // Sai do modo furtivo quando necessario
-    if (modoFurtivo && (modoLuta != giro)) {
-        modoFurtivo = false;
-        xTaskNotifyGive(swSensorHandle);
-    }
+    xTaskNotifyGive(swSensorHandle);          // Sai do modo furtivo
     // Para o robo ao final da execucao
     moverMotores(0, 0);
 }
