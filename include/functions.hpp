@@ -211,19 +211,22 @@ void printCommands() {
         "'b'        | Estrategia Costas\n"
         "'c'        | Estrategia Curvao\n"
         "'u'        | Estrategia Curvinha\n"
+        "'d'        | Estrategia Desviada\n"
         "'v'        | Estrategia em V\n"
         "'n'        | Estrategia em Vzinho\n"
         "'a'        | Estrategia em Vzao\n"
         "'g'        | Estrategia Giro\n"
         "'y'        | Seleciona configuracao personalizada\n"
-        "'d'        | Defensivo puro\n"
-        "'s'        | Teste de sensor\n"        
+        "'p'        | Iterativo puro\n"
+        "'s'        | Teste de sensor\n"  
+        "'m'        | Teste de motor\n"        
         "-----------|---------------------------------------\n"
         "'='        | Movimento Reto\n"
         "'<'        | Movimento para o lado Esquerdo\n"
         "'>'        | Movimento para o lado Direito\n"
         "-----------|---------------------------------------\n"
         "'H'        | Abaixa a haste\n"
+        "'P'        | Forca a haste\n"
         "'L'        | Levanta a haste\n"
         "-----------|---------------------------------------\n"
         "'D'        | Ativa o modo de defesa\n"
@@ -273,8 +276,9 @@ void verificarEstrategia(char comando) {
         case 'a': SerialBT.println("//=====//EM VZAO SELECIONADO//=====//"); break;
         case 'g': SerialBT.println("//=====//GIRO SELECIONADO//=====//"); break;
         case 'y': SerialBT.println("//=====//PERSONALIZADA SELECIONADA//=====//"); break;
-        case 'd': SerialBT.println("//=====//DEFENSIVO PURO SELECIONADO//=====//"); break;
+        case 'p': SerialBT.println("//=====//ITERATIVO PURO SELECIONADO//=====//"); break;
         case 's': SerialBT.println("//=====//TESTE SENSOR SELECIONADO//=====//"); break;
+        case 'm': SerialBT.println("//=====//TESTE MOTOR SELECIONADO//=====//"); break;
         default: break;
     }
 }
@@ -350,6 +354,10 @@ void definicoesBaseBT(char comando) {
         case 'H':
             hasteAbaixada = true;
             SerialBT.printf("//=====//HASTE ABAIXADA//=====//\n");
+            break;
+        case 'P':
+            hasteForcada = true;
+            SerialBT.printf("//=====//HASTE FORCADA//=====//\n");
             break;
         case 'L':
             hasteAbaixada = false;

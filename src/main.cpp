@@ -126,20 +126,6 @@ void setup() {
 void __init__() {
     Serial.println("//=====//Selecione modo de luta//=====//");
 
-    // Para debug, descomente as secoes abaixo
-
-    //===========//Modo RC//===========//
-    /*
-    selecionouModo = radioControlado;
-    Serial.println("\n//=====//Modo RC selecionado//=====//");
-    */
-
-    //==========//Modo AUTO//==========//
-    /*
-    selecionouModo = autonomo;
-    Serial.println("\n//=====//Modo AUTO selecionado//=====//");
-    */
-
     while (selecionouModo == naoSelecionado) {
         if (ultimoComandoIR != 0xFFFF) {
             uint16_t comandoAtual = ultimoComandoIR;

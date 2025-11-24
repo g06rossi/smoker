@@ -57,14 +57,7 @@ void modoRC() {
         Serial.println("Bluetooth inicializado, aguardando controle...");
 
         while (!PS4.isConnected()) {
-            setLeds(0, 200, 0,                // LED 1
-                    0, 200, 0,                // LED 2
-                    0, 200, 0,                // LED 3
-                    0, 200, 0,                // LED 4
-                    0, 200, 0);               // LED 5
-            Serial.println("Aguardando conexao...");
-            vTaskDelay(pdMS_TO_TICKS(500));   // Pequeno atraso
-            clearLeds();
+            directWriteHigh(LED_PIN);
         }
     }
 
@@ -92,9 +85,9 @@ void modoRC() {
 #pragma region TURBO
 
         if (PS4.Cross()) {
-            moverMotores(195, 195);
+            moverMotores(255, 255);
             if (primeiraAceleracao) {
-                vTaskDelay(pdMS_TO_TICKS(5));
+                vTaskDelay(pdMS_TO_TICKS(1));
                 xTaskNotifyGive(openServoHandle);
                 hasteAbaixada = true;
                 primeiraAceleracao = false;
@@ -146,13 +139,25 @@ void modoRC() {
 
 #pragma region SWITCH HASTE
 
-        // Permite movimentacao em V
+        // Proxima aceleracao abaixa a haste
+        } else if (PS4.Up() && !primeiraAceleracao) {
+            vTaskDelay(pdMS_TO_TICKS(50));
+            primeiraAceleracao = true;
+            vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
+
+        // Deixa haste levantada
+        } else if (PS4.Up()) {
+            vTaskDelay(pdMS_TO_TICKS(50));
+            primeiraAceleracao = false;
+            vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
+
+        // Força a haste
         } else if (PS4.Down() && !hasteForcada) {
             vTaskDelay(pdMS_TO_TICKS(50));
             hasteForcada = true;
             vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
         
-        // Permite movimentacao em C
+        // Abaixa e desliga a haste
         } else if (PS4.Down()) {
             vTaskDelay(pdMS_TO_TICKS(50));
             hasteForcada = false;
@@ -181,30 +186,6 @@ void modoRC() {
 //===============================================================================================//
 //==========================================//MACROS//===========================================//
 //===============================================================================================//
-
-//=====================================//Diagonal pra tras//=====================================//
-
-#pragma region MACRO TRAS
-        
-        // Tras para a direita
-        } else if (PS4.R1() > 0) {
-            vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
-            moverMotores(255, -255);          // Gira para a direita
-            vTaskDelay(pdMS_TO_TICKS(70));
-            moverMotores(-160, -160);         // Para tras
-            vTaskDelay(pdMS_TO_TICKS(200));
-            moverMotores(0, 0);               // Para os motores
-
-        // Tras para a esquerda
-        } else if (PS4.L1() > 0) {
-            vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
-            moverMotores(-255, 255);          // Gira para a direita
-            vTaskDelay(pdMS_TO_TICKS(70));
-            moverMotores(-160, -160);         // Para tras
-            vTaskDelay(pdMS_TO_TICKS(200));
-            moverMotores(0, 0);               // Para os motores
-
-#pragma endregion
 
 //========================================//Macros em V//========================================//
 
@@ -242,21 +223,21 @@ void modoRC() {
 
 #pragma endregion
 
-//========================================//Macros em C//========================================//
+//======================================//Macros Desviada//======================================//
 
-#pragma region MACRO EM C
+#pragma region MACRO DESVIADA
 
         // Movimentacao em C para a esquerda
         } else if (PS4.Left() > 0 && !switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
             hasteAbaixada = true;
-            moverMotores(-255, 255);          // Gira para a esquerda
-            vTaskDelay(pdMS_TO_TICKS(50));
-            moverMotores(255, 120);           // Curva fechada para a direita
-            vTaskDelay(pdMS_TO_TICKS(120));
-            moverMotores(255, -255);          // Gira para a direita 
-            vTaskDelay(pdMS_TO_TICKS(50));
+            moverMotores(-255, 255);          // Gira para a direita
+            vTaskDelay(pdMS_TO_TICKS(75));
+            moverMotores(255, 100);         // Para tras
+            vTaskDelay(pdMS_TO_TICKS(144));
+            moverMotores(255, -255);          // Gira para a direita
+            vTaskDelay(pdMS_TO_TICKS(156));
             moverMotores(0, 0);               // Para os motores
 
         // Movimentacao em V para a direita
@@ -264,12 +245,12 @@ void modoRC() {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
             hasteAbaixada = true;
-            moverMotores(255, -255);          // Gira para a direita 
-            vTaskDelay(pdMS_TO_TICKS(50));
-            moverMotores(120, 255);           // Curva fechada para a esquerda 
-            vTaskDelay(pdMS_TO_TICKS(120));
-            moverMotores(-255, 255);          // Gira para a esquerda 
-            vTaskDelay(pdMS_TO_TICKS(50));
+            moverMotores(255, -255);          // Gira para a direita
+            vTaskDelay(pdMS_TO_TICKS(75));
+            moverMotores(127, 255);         // Para tras
+            vTaskDelay(pdMS_TO_TICKS(144));
+            moverMotores(-255, 255);          // Gira para a direita
+            vTaskDelay(pdMS_TO_TICKS(156));
             moverMotores(0, 0);               // Para os motores
 
 #pragma endregion

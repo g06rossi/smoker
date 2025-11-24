@@ -85,21 +85,21 @@ const StrategyStep frentinho[] = {
 
 // Costas reto
 const StrategyStep costasReto[] = {
-    {-160, -160,  200},
+    { -90,  -90,  200},
     {   0,    0,    0}
 };
 
 // Costas para a esquerda
 const StrategyStep costasEsquerda[] = {
     { 255, -255,   40}, 
-    {-160, -160,  200},
+    { -90,  -90,  200},
     {   0,    0,    0}
 };
 
 // Costas para a direita
 const StrategyStep costasDireita[] = {
     {-255,  255,   40}, 
-    {-160, -160,  200},
+    { -90,  -90,  200},
     {   0,    0,    0}
 };
 
@@ -111,16 +111,18 @@ const StrategyStep costasDireita[] = {
 
 // Curva aberta (3/4 dohyo)
 const StrategyStep curvaoEsquerda[] = {
-    {-255,  255,   65}, 
-    { 255,  120,  200},
-    { 255,  60,  200} ,
+    {-255,  255,   70}, 
+    { 255,  70,  200},
+    { 255,  60,  200},
+    { 255, -255, 60},
     {   0,    0,    0}
 };
 
 const StrategyStep curvaoDireita[] = {
-    { 255, -255,   65}, 
-    { 120,  255,  200},
-    { 60,  255,  200 },
+    { 255, -255,   70}, 
+    { 70,  255,  200},
+    { 60,  255,  200},
+    { -255, 255, 60},
     {   0,    0,    0}
 };
 
@@ -142,6 +144,30 @@ const StrategyStep curvinhaDireita[] = {
     { 90,  255, 200},
     { 60,  255, 200},
     {  0,    0,   0}
+};
+
+#pragma endregion
+
+//=========================================//DESVIADA//==========================================//
+
+#pragma region DESVIADA
+
+// Esquerda
+const StrategyStep desviadaEsquerda[] = {
+    {-255,  255,   75}, 
+    { 255,  100,  144},
+    { 255, -255,  156},
+    { 127,  127,   75},
+    {   0,    0,    0}
+};
+
+// Direita
+const StrategyStep desviadaDireita[] = {
+    { 255, -255,   75}, 
+    { 127,  255,  144},
+    {-255,  255,  156},
+    { 127,  127,   75},
+    {   0,    0,    0}
 };
 
 #pragma endregion
@@ -176,15 +202,15 @@ const StrategyStep emVDireita[] = {
 // Movimentacao em V (3/4 dohyo)
 const StrategyStep vzinhoEsquerda[] = {
     { 255, 255, 205 },
-    { 255, -255, 120},
+    { 255, -255, 180},
     { 255, 255, 175 },
     {   0,   0 ,  0 }
 };
 
 const StrategyStep vzinhoDireita[] = {
-    { 255, 255, 180},
-    { -255, 255, 200},
-    { 255, 255, 125 },
+    { 255, 255, 205},
+    { -255, 255, 180},
+    { 255, 255, 175 },
     {   0,   0 ,  0 }
 };
 
@@ -254,12 +280,54 @@ void executarEstrategia(const StrategyStep strategySequence[]) {
         vTaskDelay(pdMS_TO_TICKS(strategySequence[i].delayMs));
     }
 
-    xTaskNotifyGive(swSensorHandle);          // Sai do modo furtivo
+    if(!modoFurtivo) xTaskNotifyGive(swSensorHandle);          // Sai do modo furtivo
     // Para o robo ao final da execucao
     moverMotores(0, 0);
 }
 
 #pragma endregion
+
+//===============================================================================================//
+//====================================//TESTES SENSOR MOTOR//====================================//
+//===============================================================================================//
+
+// Teste de sensor
+void testSensors() {
+    for(;;) {
+        SerialBT.printf("SENSOR -> E: %d, F: %d, D: %d\n", valueJsumoE, valueJsumoF, valueJsumoD);
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}
+
+// Teste de motor
+void testMotors() {
+    for(;;) {
+        moverMotores(255, 255);
+        SerialBT.println("FRENTE");
+        Serial.println("FRENTE");
+        vTaskDelay(pdMS_TO_TICKS(1000));
+
+        moverMotores(-255, 255);
+        SerialBT.println("ESQUERDA");
+        Serial.println("ESQUERDA");
+        vTaskDelay(pdMS_TO_TICKS(1000));
+
+        moverMotores(255, -255);
+        SerialBT.println("DIREITA");
+        Serial.println("DIREITA");
+        vTaskDelay(pdMS_TO_TICKS(1000));
+
+        moverMotores(-255, -255);
+        SerialBT.println("TRAS");
+        Serial.println("TRAS");
+        vTaskDelay(pdMS_TO_TICKS(1000));
+
+        moverMotores(0, 0);
+        SerialBT.println("PARADO");
+        Serial.println("PARADO");
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
 
 //===============================================================================================//
 //===================================//SELECIONAR ESTRATEGIA//===================================//
@@ -312,6 +380,13 @@ void estrategiaLutaBT(char comando) {
             else executarEstrategia(curvinhaDireita);
             break;
 
+        // Desviada
+        case 'd':
+            SerialBT.println("//=====//DESVIADA INICIADA//=====//");
+            if (direction == esquerda) executarEstrategia(desviadaEsquerda);
+            else executarEstrategia(desviadaDireita);
+            break;
+
         // Em V
         case 'v':                             // Movimento em forma de V
             SerialBT.println("//=====//EM V INICIADA//=====//");
@@ -348,9 +423,9 @@ void estrategiaLutaBT(char comando) {
             executarEstrategia(customStrategy);
             break;
 
-        // Defensivo puro (inicia somente defensivo)
-        case 'd':
-            SerialBT.println("//=====//DEFENSIVO PURO INICIADO//=====//");
+        // Iterativo puro (inicia somente modo iterativo)
+        case 'p':
+            SerialBT.println("//=====//ITERATIVO PURO INICIADO//=====//");
             if (hasteAbaixada) xTaskNotifyGive(openServoHandle);
             if (modoFurtivo) xTaskNotifyGive(swSensorHandle);
             moverMotores(0, 0);
@@ -360,6 +435,10 @@ void estrategiaLutaBT(char comando) {
             SerialBT.println("//=====//TESTE SENSOR INICIADO//=====//");
             if (modoFurtivo) xTaskNotifyGive(swSensorHandle);
             testSensors();
+            break;
+        case 'm':
+            SerialBT.println("//=====//TESTE MOTOR INICIADO//=====//");
+            testMotors();
             break;
 
         // Caso padrao para nao ficar sem fazer nada se o caractere enviado for invalido

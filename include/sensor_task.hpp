@@ -104,13 +104,6 @@ void IRAM_ATTR readSensors() {
     }
 }
 
-void testSensors() {
-    for(;;) {
-        SerialBT.printf("SENSOR -> E: %d, F: %d, D: %d\n", valueJsumoE, valueJsumoF, valueJsumoD);
-        vTaskDelay(pdMS_TO_TICKS(10));
-    }
-}
-
 #pragma endregion   
 
 //================================//Interpreta controle remoto//=================================//
@@ -170,10 +163,8 @@ void combatLogicTask(void *pvParameters) {
             (numIteracoes > maxIteracoesS)                 ||
             (millis() - tempoCombat > 5000)
         ) {
-
+            if(modoFurtivo) xTaskNotifyGive(swSensorHandle);
             modoLuta = ataque;                // Entra no modo de Ataque
-            modoFurtivo = false;              // Desativa o modo furtivo
-            xTaskNotifyGive(swSensorHandle);  // Notifica a task para trocar os sensores
         }
 
 //=======================================//Seleciona Modo//======================================//

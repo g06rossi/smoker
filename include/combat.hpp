@@ -38,17 +38,24 @@ bool primeiraSambada           = true;        // QUEBRADO | Primeiro passo da mo
 #pragma region MODO ATAQUE
 
 void modoAtaque() {
-    if (valueJsumoF) {                        // Se o inimigo esta a frente
+    // Se o inimigo esta a frente
+    if (((!modoFurtivo) && (valueJsumoF)) || 
+        ((modoFurtivo) && (valueJsumoE + valueJsumoF + valueJsumoD == 3))) 
+    {
         moverMotores(velFrenteRapida, velFrenteRapida);
         return;
     
     // Se o inimigo esta a esquerda
-    } else if (valueJsumoE && !valueJsumoF && !valueJsumoD) {
+    } else if (((!modoFurtivo) && (valueJsumoE && !valueJsumoF && !valueJsumoD)) ||
+        ((modoFurtivo) && (!valueJsumoD))) 
+    {
         moverMotores(-velLadoAtual, velLadoAtual);
         return;
     
     // Se o inimigo esta a direita
-    } else if (valueJsumoD && !valueJsumoF && !valueJsumoE) {
+    } else if (((!modoFurtivo) && (valueJsumoD && !valueJsumoF && !valueJsumoE)) ||
+        ((modoFurtivo) && (!valueJsumoE))) 
+    {
         moverMotores(velLadoAtual, -velLadoAtual);
         return;
 
@@ -78,17 +85,24 @@ void modoAtaque() {
 #pragma region MODO DEFESA
 
 void modoDefesa() {
-    if (valueJsumoF) {                         // Se o inimigo esta a frente
+    // Se o inimigo esta a frente
+    if (((!modoFurtivo) && (valueJsumoF)) ||  
+        ((modoFurtivo) && (valueJsumoE + valueJsumoF + valueJsumoD == 3))) 
+    {
         moverMotores(velFrenteLenta, velFrenteLenta);
         return;
 
     // Se o inimigo esta a esquerda
-    } else if (valueJsumoE && !valueJsumoF && !valueJsumoD) {
+    } else if (((!modoFurtivo) && (valueJsumoE && !valueJsumoF && !valueJsumoD)) ||
+        ((modoFurtivo) && (!valueJsumoD)))
+    {
         moverMotores(-velLadoAtual, velLadoAtual);
         return;
 
     // Se o inimigo esta a direita
-    } else if (valueJsumoD && !valueJsumoF && !valueJsumoE) {
+    } else if (((!modoFurtivo) && (valueJsumoD && !valueJsumoF && !valueJsumoE)) ||
+        ((modoFurtivo) && (!valueJsumoE))) 
+    {
         moverMotores(velLadoAtual, -velLadoAtual);
         return;
 
@@ -118,17 +132,24 @@ void modoDefesa() {
 #pragma region MODO GIRO
 
 void modoGiro() {
-    if (valueJsumoF) {                        // Se ve oponente a frente, para
+    // Se o inimigo esta a frente
+    if (((!modoFurtivo) && (valueJsumoF)) ||  
+        ((modoFurtivo) && (valueJsumoE + valueJsumoF + valueJsumoD == 3))) 
+    {
         moverMotores(0, 0);
         return;
 
     // Gira para a esquerda
-    } else if (valueJsumoE && !valueJsumoF && !valueJsumoD) {
+    } else if (((!modoFurtivo) && (valueJsumoE && !valueJsumoF && !valueJsumoD)) ||
+        ((modoFurtivo) && (!valueJsumoD))) 
+    {
         moverMotores(-velLadoAtual, velLadoAtual);
         return;
 
     // Gira para a direita
-    } else if (valueJsumoD && !valueJsumoF && !valueJsumoE) {
+    } else if (((!modoFurtivo) && (valueJsumoD && !valueJsumoF && !valueJsumoE)) ||
+        ((modoFurtivo) && (!valueJsumoE))) 
+    {
         moverMotores(velLadoAtual, -velLadoAtual);
         return;
 
@@ -161,20 +182,27 @@ void modoBusca() {
     static int passoBusca = 0;
     static unsigned long tempoPassoBusca = 0;
 
-    // Logica de curva executada a cada pulso
-    if (valueJsumoE) {
+    // Gira para a esquerda
+    if (((!modoFurtivo) && (valueJsumoE && !valueJsumoF && !valueJsumoD)) ||
+        ((modoFurtivo) && (!valueJsumoD))) 
+    {
         moverMotores(-velLadoAtual, velLadoAtual);
         passoBusca = 0;                      // Reinicia a logica de busca
         avancosIteracao = 0;                  // Reinicia a contagem de avancos da iteracao
         return;
 
-    } else if (valueJsumoD) {
+    // Gira para a direita
+    } else if (((!modoFurtivo) && (valueJsumoD && !valueJsumoF && !valueJsumoE)) ||
+        ((modoFurtivo) && (!valueJsumoE))) 
+    {
         moverMotores(velLadoAtual, -velLadoAtual);
         passoBusca = 0;                      // Reinicia a logica de busca
         avancosIteracao = 0;                  // Reinicia a contagem de avancos da iteracao
         return;
 
-    } else if (valueJsumoF && !valueJsumoE && !valueJsumoD) {
+    } else if (((!modoFurtivo) && (valueJsumoF)) ||  
+        ((modoFurtivo) && (valueJsumoE + valueJsumoF + valueJsumoD == 3))) 
+    {
         // Maquina de estados se nao houver curva
         switch (passoBusca) {
             case 0:                           // Passo 1: Avancar por 50ms
@@ -201,20 +229,26 @@ void modoBusca() {
                 }
                 break;
         }
-
-    } else {                                   // Se nao ve o inimigo
-        switch (ultimoLado) {
-            case vistoDireita:                 // Procura o inimigo no ultimo lado visto
+    
+    } else {
+        switch (ultimoLado) {             // Procura o inimigo no ultimo lado visto
+            case vistoEsquerda:
+                moverMotores(-velUltimoLado, velUltimoLado);
+                passoBusca = 0;               // Reinicia a logica de busca
+                avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
+                return;
+               
+            case vistoDireita:
                 moverMotores(velUltimoLado, -velUltimoLado);
                 passoBusca = 0;               // Reinicia a logica de busca
                 avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
-                break;
-            
-            default:                           // Caso nao veja na direita, gira para a esquerda
+                return;
+              
+            default:                      // Se nunca viu, gira para tentar encontrar
                 moverMotores(velUltimoLado, -velUltimoLado);
                 passoBusca = 0;               // Reinicia a logica de busca
                 avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
-                break;
+                return;
         }
     }
 }
@@ -233,23 +267,30 @@ void modoQuebrado() {
     static int passoQuebrado = 0;
     static unsigned long tempoPassoQuebrado = 0;
 
-    // Logica de curva executada a cada pulso
-    if (valueJsumoE && !valueJsumoD) {
+    // Gira para a esquerda
+    if (((!modoFurtivo) && (valueJsumoE && !valueJsumoF && !valueJsumoD)) ||
+        ((modoFurtivo) && (!valueJsumoD))) 
+    {
         moverMotores(-velLadoAtual, velLadoAtual);
         passoQuebrado = 0;                   // Reinicia a logica do modo quebrado
         leituraFrente = 0;                    // Reinicia a contagem de leituras com sensor F
         primeiraSambada = true;               // Indica que voltou para o primeiro movimento
         return;
 
-    } else if (valueJsumoD && !valueJsumoE) {
+    // Gira para a direita
+    } else if (((!modoFurtivo) && (valueJsumoD && !valueJsumoF && !valueJsumoE)) ||
+        ((modoFurtivo) && (!valueJsumoE))) 
+    {
         moverMotores(velLadoAtual, -velLadoAtual);
         passoQuebrado = 0;                   // Reinicia a logica do modo quebrado
         leituraFrente = 0;                    // Reinicia a contagem de leituras com sensor F
         primeiraSambada = true;               // Indica que voltou para o primeiro movimento
         return;
 
-    } else if (valueJsumoF && !valueJsumoD && !valueJsumoE) {
-    // Maquina de estados se nao houver curva
+    } else if (((!modoFurtivo) && (valueJsumoF)) ||  
+        ((modoFurtivo) && (valueJsumoE + valueJsumoF + valueJsumoD == 3))) 
+    {
+        // Maquina de estados se nao houver curva
         switch (passoQuebrado) {
             case 0:                           // Passo 1: Primeira sambada esquerda
                 moverMotores(-velFrenteLenta, (velFrenteLenta + acrescimo));
@@ -319,20 +360,27 @@ void modoQuebrado() {
         }
 
     } else {                                   // Se nao ve o inimigo
-        switch (ultimoLado) {
-            case vistoDireita:                 // Procura o inimigo no ultimo lado visto
+        switch (ultimoLado) {             // Procura o inimigo no ultimo lado visto
+            case vistoEsquerda:
+                moverMotores(-velUltimoLado, velUltimoLado);
+                passoQuebrado = 0;            // Reinicia a logica do modo quebrado
+                leituraFrente = 0;             // Reinicia a contagem de leituras com sensor F
+                primeiraSambada = true;        // Indica que voltou para o primeiro movimento
+                return;
+               
+            case vistoDireita:
                 moverMotores(velUltimoLado, -velUltimoLado);
                 passoQuebrado = 0;            // Reinicia a logica do modo quebrado
                 leituraFrente = 0;             // Reinicia a contagem de leituras com sensor F
                 primeiraSambada = true;        // Indica que voltou para o primeiro movimento
-                break;
-            
-            default:                           // Caso nao veja na direita, gira para a esquerda
+                return;
+              
+            default:                      // Se nunca viu, gira para tentar encontrar
                 moverMotores(velUltimoLado, -velUltimoLado);
                 passoQuebrado = 0;            // Reinicia a logica do modo quebrado
                 leituraFrente = 0;             // Reinicia a contagem de leituras com sensor F
                 primeiraSambada = true;        // Indica que voltou para o primeiro movimento
-                break;
+                return;
         }
     }
 }
@@ -379,6 +427,9 @@ informacoes em: https://tinyurl.com/pt7b33u3
 #pragma region WOODPECKER
 
 void buscaWoodpecker() {
+
+/*
+
     static int passoWoodpecker = 0;
     static unsigned long tempoPassoWoodpecker = 0;
 
@@ -447,6 +498,81 @@ void buscaWoodpecker() {
         modoFurtivo = false; 
         xTaskNotifyGive(swSensorHandle); 
     }
+
+*/
+
+    static int passoBusca = 0;
+    static unsigned long tempoPassoBusca = 0;
+
+    // Gira para a esquerda
+    if (((!modoFurtivo) && (valueJsumoE && !valueJsumoF && !valueJsumoD)) ||
+        ((modoFurtivo) && (!valueJsumoD))) 
+    {
+        moverMotores(-velLadoAtual, velLadoAtual);
+        passoBusca = 0;                      // Reinicia a logica de busca
+        avancosIteracao = 0;                  // Reinicia a contagem de avancos da iteracao
+        return;
+
+    // Gira para a direita
+    } else if (((!modoFurtivo) && (valueJsumoD && !valueJsumoF && !valueJsumoE)) ||
+        ((modoFurtivo) && (!valueJsumoE))) 
+    {
+        moverMotores(velLadoAtual, -velLadoAtual);
+        passoBusca = 0;                      // Reinicia a logica de busca
+        avancosIteracao = 0;                  // Reinicia a contagem de avancos da iteracao
+        return;
+
+    } else if (((!modoFurtivo) && (valueJsumoF)) ||  
+        ((modoFurtivo) && (valueJsumoE + valueJsumoF + valueJsumoD == 3))) 
+    {
+        // Maquina de estados se nao houver curva
+        switch (passoBusca) {
+            case 0:                           // Passo 1: Avancar por 50ms
+                moverMotores(velFrenteLenta, velFrenteLenta);
+                tempoPassoBusca = millis();
+                passoBusca = 1;
+                break;
+
+            case 1:                           // Passo 2: Esperar os 50ms terminarem
+                if (millis() - tempoPassoBusca > 125) passoBusca = 2;
+                break;
+
+            case 2:                           // Passo 3: Parar por 500ms
+                moverMotores(0, 0);
+                tempoPassoBusca = millis();
+                passoBusca = 3;
+                break;
+
+            case 3:                           // Passo 4: Esperar os 500ms terminarem
+                if (millis() - tempoPassoBusca > 1000) {
+                    passoBusca = 0;          // Reinicia a sequencia
+                    avancosIteracao++;        // Acresce a contagem de avancos da iteracao
+                    avancosTotais++;          // Acresce a contagem de avancos totais
+                }
+                break;
+        }
+
+    } else {                                   // Se nao ve o inimigo
+        switch (ultimoLado) {             // Procura o inimigo no ultimo lado visto
+            case vistoEsquerda:
+                moverMotores(-velUltimoLado, velUltimoLado);
+                passoBusca = 0;               // Reinicia a logica de busca
+                avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
+                return;
+               
+            case vistoDireita:
+                moverMotores(velUltimoLado, -velUltimoLado);
+                passoBusca = 0;               // Reinicia a logica de busca
+                avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
+                return;
+              
+            default:                      // Se nunca viu, gira para tentar encontrar
+                moverMotores(velUltimoLado, -velUltimoLado);
+                passoBusca = 0;               // Reinicia a logica de busca
+                avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
+                return;
+        }
+    }
 }
 
 #pragma endregion
@@ -456,6 +582,9 @@ void buscaWoodpecker() {
 #pragma region SLOW SEARCH
 
 void slowSearch() {
+
+/*
+
     static int passoSearch = 0;
     static unsigned long tempoPassoSearch = 0;
 
@@ -533,6 +662,81 @@ void slowSearch() {
     if (modoFurtivo && (modoLuta != giro)) { 
         modoFurtivo = false; 
         xTaskNotifyGive(swSensorHandle); 
+    }
+
+*/
+
+    static int passoBusca = 0;
+    static unsigned long tempoPassoBusca = 0;
+
+    // Gira para a esquerda
+    if (((!modoFurtivo) && (valueJsumoE && !valueJsumoF && !valueJsumoD)) ||
+        ((modoFurtivo) && (!valueJsumoD))) 
+    {
+        moverMotores(-velLadoAtual, velLadoAtual);
+        passoBusca = 0;                      // Reinicia a logica de busca
+        avancosIteracao = 0;                  // Reinicia a contagem de avancos da iteracao
+        return;
+
+    // Gira para a direita
+    } else if (((!modoFurtivo) && (valueJsumoD && !valueJsumoF && !valueJsumoE)) ||
+        ((modoFurtivo) && (!valueJsumoE))) 
+    {
+        moverMotores(velLadoAtual, -velLadoAtual);
+        passoBusca = 0;                      // Reinicia a logica de busca
+        avancosIteracao = 0;                  // Reinicia a contagem de avancos da iteracao
+        return;
+
+    } else if (((!modoFurtivo) && (valueJsumoF)) ||  
+        ((modoFurtivo) && (valueJsumoE + valueJsumoF + valueJsumoD == 3))) 
+    {
+        // Maquina de estados se nao houver curva
+        switch (passoBusca) {
+            case 0:                           // Passo 1: Avancar por 50ms
+                moverMotores(velFrenteLenta, velFrenteLenta);
+                tempoPassoBusca = millis();
+                passoBusca = 1;
+                break;
+
+            case 1:                           // Passo 2: Esperar os 50ms terminarem
+                if (millis() - tempoPassoBusca > 125) passoBusca = 2;
+                break;
+
+            case 2:                           // Passo 3: Parar por 500ms
+                moverMotores(0, 0);
+                tempoPassoBusca = millis();
+                passoBusca = 3;
+                break;
+
+            case 3:                           // Passo 4: Esperar os 500ms terminarem
+                if (millis() - tempoPassoBusca > 1000) {
+                    passoBusca = 0;          // Reinicia a sequencia
+                    avancosIteracao++;        // Acresce a contagem de avancos da iteracao
+                    avancosTotais++;          // Acresce a contagem de avancos totais
+                }
+                break;
+        }
+
+    } else {                                   // Se nao ve o inimigo
+        switch (ultimoLado) {             // Procura o inimigo no ultimo lado visto
+            case vistoEsquerda:
+                moverMotores(-velUltimoLado, velUltimoLado);
+                passoBusca = 0;               // Reinicia a logica de busca
+                avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
+                return;
+               
+            case vistoDireita:
+                moverMotores(velUltimoLado, -velUltimoLado);
+                passoBusca = 0;               // Reinicia a logica de busca
+                avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
+                return;
+              
+            default:                      // Se nunca viu, gira para tentar encontrar
+                moverMotores(velUltimoLado, -velUltimoLado);
+                passoBusca = 0;               // Reinicia a logica de busca
+                avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
+                return;
+        }
     }
 }
 

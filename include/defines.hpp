@@ -180,12 +180,12 @@ VAMPETA       18     19     17     16
 #pragma region VARIAVEIS
 
 volatile bool hasteAbaixada    = false;       //  DOIS | Define se a haste do robo vai ser abaixada
+volatile bool hasteForcada     = true;        //  DOIS | Define se a haste deve ficar ligada aberta
 volatile bool valueJsumoF      = false;       //  AUTO | Definicao do Jsumo Frontal
 volatile bool valueJsumoE      = false;       //  AUTO | Definicao do Jsumo Esquerdo
 volatile bool valueJsumoD      = false;       //  AUTO | Definicao do Jsumo Direito
 
 bool inicializado              = false;       //  DOIS | Flag para validar a inicializacao 
-bool hasteForcada              = true;        //  DOIS | Define se a haste deve ficar ligada aberta
 bool isConfiguring             = false;       //  AUTO | Flag para controlar o modo de configuracao
 bool running                   = false;       //  AUTO | Indica se o robo esta lutando
 bool ready                     = false;       //  AUTO | Usada para testar se o robo recebe IR
