@@ -100,10 +100,10 @@ Definicao de pinos e configuracoes
 !INFO | Ultimos pinos conhecidos dos robos
 -----------------------------------
               LP     LN     RP     RN
-SMOKER        16     17     19     18
+SMOKER        17     16     19     18
 ARRUELA       17     16     19     18
 BRIGA         19     18     16     17
-FUEGO         19     18     17     16
+FUEGO         19     18     16     17
 FUEGUITO      19     18     16     17
 RESSACA       17     16     19     18
 SHENLONG      19     18     16     17

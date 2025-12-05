@@ -216,6 +216,7 @@ void printCommands() {
         "'n'        | Estrategia em Vzinho\n"
         "'a'        | Estrategia em Vzao\n"
         "'g'        | Estrategia Giro\n"
+        "'j'        | Estrategia Foice\n"
         "'y'        | Seleciona configuracao personalizada\n"
         "'p'        | Iterativo puro\n"
         "'s'        | Teste de sensor\n"  
@@ -275,6 +276,7 @@ void verificarEstrategia(char comando) {
         case 'n': SerialBT.println("//=====//EM VZINHO SELECIONADO//=====//"); break;
         case 'a': SerialBT.println("//=====//EM VZAO SELECIONADO//=====//"); break;
         case 'g': SerialBT.println("//=====//GIRO SELECIONADO//=====//"); break;
+        case 'j': SerialBT.println("//=====//FOICE SELECIONADA//=====//"); break;
         case 'y': SerialBT.println("//=====//PERSONALIZADA SELECIONADA//=====//"); break;
         case 'p': SerialBT.println("//=====//ITERATIVO PURO SELECIONADO//=====//"); break;
         case 's': SerialBT.println("//=====//TESTE SENSOR SELECIONADO//=====//"); break;

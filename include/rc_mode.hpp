@@ -33,7 +33,7 @@ bool primeiraAceleracao        = true;        // Indica que o robo nunca andou p
 Atualizar RESSACA, SHENLONG e VAMPETA
 */
 
-const char* SMOKER             = "a0:b7:65:0f:74:a4";
+const char* SMOKER             = "7c:9e:bd:fb:83:68";
 const char* ARRUELA            = "8c:4f:00:3d:10:f0";
 const char* BRIGA              = "7c:9e:bd:fb:83:80";
 const char* FUEGO              = "78:1c:3c:f6:24:70";

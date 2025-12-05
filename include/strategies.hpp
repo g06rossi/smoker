@@ -177,6 +177,7 @@ const StrategyStep desviadaDireita[] = {
 #pragma region EM V
 
 // Movimentacao em V (3/4 dohyo)
+// Esquerda
 const StrategyStep emVEsquerda[] = {
     {-255,  255,   50}, 
     { 255,  255,  150},
@@ -185,6 +186,7 @@ const StrategyStep emVEsquerda[] = {
     {   0,    0,    0}
 };
 
+// Direita
 const StrategyStep emVDireita[] = {
     { 255, -255,   50}, 
     { 255,  255,  155},
@@ -199,7 +201,8 @@ const StrategyStep emVDireita[] = {
 
 #pragma region EM VZINHO
 
-// Movimentacao em V (3/4 dohyo)
+// Movimentacao em VZINHO
+// Esquerda
 const StrategyStep vzinhoEsquerda[] = {
     { 255, 255, 205 },
     { 255, -255, 180},
@@ -207,6 +210,7 @@ const StrategyStep vzinhoEsquerda[] = {
     {   0,   0 ,  0 }
 };
 
+// Direita
 const StrategyStep vzinhoDireita[] = {
     { 255, 255, 205},
     { -255, 255, 180},
@@ -220,7 +224,8 @@ const StrategyStep vzinhoDireita[] = {
 
 #pragma region EM VZAO
 
-// Movimentacao em V (3/4 dohyo)
+// Movimentacao em VZAO
+// Esquerda
 const StrategyStep vzaoEsquerda[] = {
     {-255, 255,  90},
     { 255, 255, 155},
@@ -229,6 +234,7 @@ const StrategyStep vzaoEsquerda[] = {
     {   0,   0,   0}
 };
 
+// Direita
 const StrategyStep vzaoDireita[] = {
     { 255,-255,  90},
     { 255, 255, 200},
@@ -258,6 +264,26 @@ const StrategyStep giroEsquerda[] = {
 const StrategyStep giroDireita[] = {
     { 255,-255, 150},
     {   0,   0,   0}
+};
+
+#pragma endregion
+
+//============================================//FOICE//===========================================//
+
+#pragma region FOICE
+
+// Esquerda
+const StrategyStep foiceEsquerda[] = {
+    { 255,  40,  300},
+    { 255,  20, 75},
+    {   0,    0,    0}
+};
+
+// Direita
+const StrategyStep foiceDireita[] = {
+    { 40,  255,  300},
+    { 20,  255,  75},
+    {   0,    0,    0}
 };
 
 #pragma endregion
@@ -413,6 +439,13 @@ void estrategiaLutaBT(char comando) {
             SerialBT.println("//=====//GIRO (180 GRAUS) INICIADO//=====//");
             if (direction == esquerda) executarEstrategia(giroEsquerda);
             else executarEstrategia(giroDireita);
+            break;
+
+        // Foice
+        case 'j':
+            SerialBT.println("//=====//FOICE INICIADA//=====//");
+            if (direction == esquerda) executarEstrategia(foiceEsquerda);
+            else executarEstrategia(foiceDireita);
             break;
  
 //======================================//Casos especiais//======================================//
