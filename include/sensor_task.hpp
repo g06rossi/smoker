@@ -80,9 +80,9 @@ void switchSensor(void *pvParameters) {
 void IRAM_ATTR readSensors() {
     if(JSumoLigado) {
         portENTER_CRITICAL_ISR(&sensorMux);   // Indica estrutura critica: prioridade de execucao
-        valueJsumoF = (GPIO.in1.val >> (JSUMO_F_PIN - 32)) & 0x1;
-        valueJsumoD = (GPIO.in1.val >> (JSUMO_D_PIN - 32)) & 0x1;
-        valueJsumoE = (GPIO.in1.val >> (JSUMO_E_PIN - 32)) & 0x1;
+        valueJsumoF = !(GPIO.in1.val >> (JSUMO_F_PIN - 32)) & 0x1;
+        valueJsumoD = !(GPIO.in1.val >> (JSUMO_D_PIN - 32)) & 0x1;
+        valueJsumoE = !(GPIO.in1.val >> (JSUMO_E_PIN - 32)) & 0x1;
         portEXIT_CRITICAL_ISR(&sensorMux);    // Fim da estrutura critica
     } else {
         portENTER_CRITICAL_ISR(&sensorMux);   // Indica estrutura critica: prioridade de execucao

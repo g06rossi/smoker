@@ -124,6 +124,7 @@ void modoAUTO() {
     Serial.println("Cliente Bluetooth conectado! Iniciando comunicacao");
     SerialBT.println("//=====//Bluetooth conectado!//=====//");
     printCommands();                          // Indica os comandos disponiveis
+    lerSensores();                            // Indica quais sensores estao vendo o adversario
 
     translateBT();                            // Interpreta o char recebido por BT
     inicializado = true;                      // Indica que a configuracao acabou e o loop reinicia

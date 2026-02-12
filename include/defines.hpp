@@ -100,19 +100,19 @@ Definicao de pinos e configuracoes
 !INFO | Ultimos pinos conhecidos dos robos
 -----------------------------------
               LP     LN     RP     RN
-SMOKER        17     16     19     18
+SMOKER        16     17     19     18
 ARRUELA       17     16     19     18
 BRIGA         19     18     16     17
 FUEGO         19     18     16     17
 FUEGUITO      19     18     16     17
-RESSACA       17     16     19     18
+RESSACA       19     18     17     16
 SHENLONG      19     18     16     17
-TSUNAMI       19     18     17     16
+TSUNAMI       17     16     18     19
 VAMPETA       18     19     17     16
 */
 
-#define LEFT_POS_PIN           17             //  DOIS | Ponte H M1 A_IN_2 ESP32 IO18
-#define LEFT_NEG_PIN           16             //  DOIS | Ponte H M1 A_IN_1 ESP32 IO19
+#define LEFT_POS_PIN           16             //  DOIS | Ponte H M1 A_IN_2 ESP32 IO18
+#define LEFT_NEG_PIN           17             //  DOIS | Ponte H M1 A_IN_1 ESP32 IO19
 #define RIGHT_POS_PIN          19             //  DOIS | Ponte H M2 B_IN_2 ESP32 IO16
 #define RIGHT_NEG_PIN          18             //  DOIS | Ponte H M2 B_IN_1 ESP32 IO17
 
@@ -131,7 +131,7 @@ VAMPETA       18     19     17     16
 
 #pragma region PINOS SERVO
 
-#define SERVOMOTOR_PIN         23             //  DOIS | Servomotor da haste ESP32 porta 23
+#define SERVOMOTOR_PIN         5              //  DOIS | Servomotor da haste ESP32 porta 23
 
 #define SERVO_LEDC_CHANNEL     LEDC_CHANNEL_0 //  DOIS | Canal do PWM do servo
 #define SERVO_TIMER            LEDC_TIMER_0   //  DOIS | Timer do PWM do servo
@@ -244,7 +244,7 @@ struct StrategyStep {                         //  AUTO | Struct para os comandos
    int delayMs;
 };
 
-SelecionouModo selecionouModo  = naoSelecionado;
+SelecionouModo selecionouModo  = radioControlado;
 ModoLuta modoLuta              = ataque;
 Direction direction            = esquerda;
 DirecaoAdversario ultimoLado   = nuncaVisto;

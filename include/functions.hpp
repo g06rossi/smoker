@@ -197,6 +197,24 @@ void bt_callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
   }
 }
 
+void lerSensores() {
+    int sensorF = 0;
+    int sensorD = 0;
+    int sensorE = 0;
+
+    portENTER_CRITICAL_ISR(&sensorMux);       // Indica estrutura critica: prioridade de execucao
+    for (int i = 0; i < 1000; ++i) {
+        sensorF += (GPIO.in1.val >> (JSUMO_F_PIN - 32)) & 0x1;
+        sensorD += (GPIO.in1.val >> (JSUMO_D_PIN - 32)) & 0x1;
+        sensorE += (GPIO.in1.val >> (JSUMO_E_PIN - 32)) & 0x1;
+    }
+    portEXIT_CRITICAL_ISR(&sensorMux);    // Fim da estrutura critica
+
+    SerialBT.printf("Leitura dos sensores (0 a 1000)\n");
+    SerialBT.printf("E: %d   F: %d     D: %d\n", sensorE, sensorF, sensorD);
+    return;
+}
+
 //===================================//Comandos selecionados//===================================//
 
 #pragma region SELECIONADOS
@@ -240,12 +258,14 @@ void printCommands() {
         "-----------|---------------------------------------\n"
         "'F'        | Ativa o modo furtivo\n"
         "'O'        | Desativa o modo furtivo\n"
+        "'T'        | Leitura atual dos sensores\n"
         "-----------|---------------------------------------\n"
         "'z'        | Inicia configuracao personalizada\n"
         "'.'        | Finaliza configuracao personalizada\n"
         "-----------|---------------------------------------\n"
         "'E'        | Conferir estrategia\n"
         "'0'        | Finaliza configuracao\n"
+        "'R'        | Reinicia o ESP\n"
         "-----------|---------------------------------------\n"
         "\n"
         "Botao IR   | Funcao\n"
@@ -415,6 +435,9 @@ void definicoesBaseBT(char comando) {
             modoFurtivo = false;
             SerialBT.printf("//=====//MODO FURTIVO DESATIVADO//=====//\n");
             break;
+        case 'T':
+            lerSensores();
+            break;
 
 #pragma endregion
 
@@ -431,6 +454,11 @@ void definicoesBaseBT(char comando) {
             SerialBT.printf("//=====//FIM DOS COMANDOS//=====//\n");
             checkStrategy();
             break;
+
+        case 'R':
+            SerialBT.printf("//=====//REINICIANDO ESP//=====//\n");
+            delay(1000);
+            ESP.restart();
 
         default:                              // Define estrategiaLutaBT se nao for ENTER ou numero
             if (!(comando == 13 || comando == 10 || (comando > 48 && comando < 58))) {

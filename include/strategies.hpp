@@ -274,15 +274,19 @@ const StrategyStep giroDireita[] = {
 
 // Esquerda
 const StrategyStep foiceEsquerda[] = {
-    { 255,  40,  300},
-    { 255,  20, 75},
+    { 255,  120, 100},
+    { 255,  55, 380 },
+    { 255,  -255, 175 },
+    { 255,  255, 100},
     {   0,    0,    0}
 };
 
 // Direita
 const StrategyStep foiceDireita[] = {
-    { 40,  255,  300},
-    { 20,  255,  75},
+    { 4135, 255, 190},
+    { 100,  255, 190},
+    { -255, 255, 175},
+    { 255,  255, 100},
     {   0,    0,    0}
 };
 

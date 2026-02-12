@@ -18,8 +18,8 @@
 #define limiteCurva            127.0          // Velocidade limite em curvas puras (deve ser FLOAT)
 
 volatile bool switchCxV        = false;       // Switch definido para controlar MACRO usado
-volatile bool velLimitada      = true;        // Switch definido pra limitar a velocidade do motor
-int limiteVelocidade           = 180;         // Limite de velocidade do motor
+volatile bool velLimitada      = false;       // Switch definido pra limitar a velocidade do motor
+int limiteVelocidade           = 255;         // Limite de velocidade do motor
 int zonaMorta                  = 20;          // Zona desconsiderada do controle de PS4
 volatile int r2                = 0;           // Valor do gatilho direito do PS4 (R2)
 volatile int l2                = 0;           // Valor do gatilho esquerdo do PS4 (L2)
@@ -33,15 +33,15 @@ bool primeiraAceleracao        = true;        // Indica que o robo nunca andou p
 Atualizar RESSACA, SHENLONG e VAMPETA
 */
 
-const char* SMOKER             = "7c:9e:bd:fb:83:68";
-const char* ARRUELA            = "8c:4f:00:3d:10:f0";
-const char* BRIGA              = "7c:9e:bd:fb:83:80";
-const char* FUEGO              = "78:1c:3c:f6:24:70";
+const char* SMOKER             = "a4:f0:0f:73:a0:60";
+const char* ARRUELA            = "98:83:89:e8:11:75";
+const char* BRIGA              = "5c:01:3b:74:15:20";
+const char* FUEGO              = "7c:9e:bd:fb:83:74";
 const char* FUEGUITO           = "8c:4f:00:3d:27:00";
 const char* RESSACA            = "a0:b7:65:0f:7b:e0";
 const char* SHENLONG           = "78:9b:3c:f6:29:fc";
-const char* TSUNAMI            = "74:29:af:c1:35:cc";
-const char* VAMPETA            = "7c:9e:bd:fb:83:64";
+const char* TSUNAMI            = "a0:b7:65:58:5d:24";
+const char* VAMPETA            = "f4:2d:c9:5a:14:38";
 
 #pragma endregion
 
@@ -55,6 +55,7 @@ void modoRC() {
     // Tenta conectar ao controle PS4 e debuga conexao pelo Serial Monitor
     if (PS4.begin(SMOKER)) {
         Serial.println("Bluetooth inicializado, aguardando controle...");
+        xTaskNotifyGive(swSensorHandle);      // Entra no modo furtivo
 
         while (!PS4.isConnected()) {
             directWriteHigh(LED_PIN);
@@ -149,7 +150,7 @@ void modoRC() {
         } else if (PS4.Up()) {
             vTaskDelay(pdMS_TO_TICKS(50));
             primeiraAceleracao = false;
-            vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
+            vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras 
 
         // Força a haste
         } else if (PS4.Down() && !hasteForcada) {
