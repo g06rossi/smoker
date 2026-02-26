@@ -112,48 +112,51 @@ const StrategyStep costasDireita[] = {
 // Curva aberta (3/4 dohyo)
 const StrategyStep curvaoEsquerda[] = {
     {-255,  255,   70}, 
-    { 255,  70,  200},
-    { 255,  60,  200},
-    { 255, -255, 60},
+    { 255,   50,  170},
+    { 255,   20,  300},
+    { 255, -255,  120},
+    { 255,  255,   30},
     {   0,    0,    0}
 };
 
 const StrategyStep curvaoDireita[] = {
-    { 255, -255,   70}, 
-    { 70,  255,  200},
-    { 60,  255,  200},
-    { -255, 255, 60},
-    {   0,    0,    0}
+    { 255, -255,  70}, 
+    {  70,  255, 150},
+    {  40,  255, 220},
+    {-255,  255, 150},
+    { 255,  255,  60},
+    {   0,    0,   0}
 };
 
 #pragma endregion
 
-//==========================================//CURVINHA//=========================================//
+//==========================================//CURVA//=========================================//
 
-#pragma region CURVINHA
+#pragma region CURVA
 
 // Curva fechada (3/4 dohyo)
-const StrategyStep curvinhaEsquerda[] = {
-    {-255,  255,  40}, 
-    { 255,  90,  400},
+const StrategyStep curvaEsquerda[] = {
+    {-255,  255,   70}, 
+    { 255,   50,  180},
+    { 255,   20,  130},
     {   0,    0,   0}
 };
 
-const StrategyStep curvinhaDireita[] = {
-    { 255,-255,  40}, 
-    { 90,  255, 200},
-    { 60,  255, 200},
+const StrategyStep curvaDireita[] = {
+    { 255,-255,  70}, 
+    {  70, 255, 170},
+    {  40, 255, 130},
     {  0,    0,   0}
 };
 
 #pragma endregion
 
-//=========================================//DESVIADA//==========================================//
+//=========================================//CURVA//==========================================//
 
-#pragma region DESVIADA
+#pragma region CURVINHA
 
 // Esquerda
-const StrategyStep desviadaEsquerda[] = {
+const StrategyStep curvinhaEsquerda[] = {
     {-255,  255,   75}, 
     { 255,  100,  144},
     { 255, -255,  156},
@@ -162,7 +165,7 @@ const StrategyStep desviadaEsquerda[] = {
 };
 
 // Direita
-const StrategyStep desviadaDireita[] = {
+const StrategyStep curvinhaDireita[] = {
     { 255, -255,   75}, 
     { 127,  255,  144},
     {-255,  255,  156},
@@ -179,19 +182,19 @@ const StrategyStep desviadaDireita[] = {
 // Movimentacao em V (3/4 dohyo)
 // Esquerda
 const StrategyStep emVEsquerda[] = {
-    {-255,  255,   50}, 
-    { 255,  255,  150},
-    { 255, -255,  145},
-    { 255,  255,  145},
+    {-255,  255,   40}, 
+    { 255,  255,  155},
+    { 255, -255,  190},
+    { 255,  255,  170},
     {   0,    0,    0}
 };
 
 // Direita
 const StrategyStep emVDireita[] = {
-    { 255, -255,   50}, 
-    { 255,  255,  155},
+    { 255, -255,   45}, 
+    { 255,  255,  190},
     {-255,  255,  155},
-    { 255,  255,  125},
+    { 255,  255,  200},
     {   0,    0,    0}
 };
 
@@ -204,18 +207,18 @@ const StrategyStep emVDireita[] = {
 // Movimentacao em VZINHO
 // Esquerda
 const StrategyStep vzinhoEsquerda[] = {
-    { 255, 255, 205 },
+    { 255,  255, 190},
     { 255, -255, 180},
-    { 255, 255, 175 },
-    {   0,   0 ,  0 }
+    { 255,  255, 180},
+    {   0,    0,   0}
 };
 
 // Direita
 const StrategyStep vzinhoDireita[] = {
-    { 255, 255, 205},
-    { -255, 255, 180},
-    { 255, 255, 175 },
-    {   0,   0 ,  0 }
+    { 255,  255, 190},
+    {-255,  255, 155},
+    { 255,  255, 190},
+    {   0,    0,   0}
 };
 
 #pragma endregion
@@ -228,18 +231,18 @@ const StrategyStep vzinhoDireita[] = {
 // Esquerda
 const StrategyStep vzaoEsquerda[] = {
     {-255, 255,  90},
-    { 255, 255, 155},
-    { 255,-255, 177},
-    { 255, 255, 125},
+    { 255, 255, 145},
+    { 255,-255, 200},
+    { 255, 255, 170},
     {   0,   0,   0}
 };
 
 // Direita
 const StrategyStep vzaoDireita[] = {
     { 255,-255,  90},
-    { 255, 255, 200},
-    {-255, 255, 125},
-    { 255, 255, 125},
+    { 255, 255, 170},
+    {-255, 255, 145},
+    { 255, 255, 170},
     {   0,   0,   0}
 };
 
@@ -263,6 +266,28 @@ const StrategyStep giroEsquerda[] = {
 
 const StrategyStep giroDireita[] = {
     { 255,-255, 150},
+    {   0,   0,   0}
+};
+
+#pragma endregion
+
+//============================================//GIRINHO//===========================================//
+
+#pragma region GIRINHO
+
+/*
+!INFO | Estrategia de girinho
+-----------------------------------
+Faz um giro de 90° começando de lado (para na frente)
+*/
+
+const StrategyStep girinhoEsquerda[] = {
+    {-255, 255, 90},
+    {   0,   0,   0}
+};
+
+const StrategyStep girinhoDireita[] = {
+    { 255,-255, 110},
     {   0,   0,   0}
 };
 
@@ -404,16 +429,16 @@ void estrategiaLutaBT(char comando) {
 
         // Curvinha
         case 'u':
-            SerialBT.println("//=====//CURVINHA INICIADA//=====//");
-            if (direction == esquerda) executarEstrategia(curvinhaEsquerda);
-            else executarEstrategia(curvinhaDireita);
+            SerialBT.println("//=====//CURVA INICIADA//=====//");
+            if (direction == esquerda) executarEstrategia(curvaEsquerda);
+            else executarEstrategia(curvaDireita);
             break;
 
         // Desviada
-        case 'd':
-            SerialBT.println("//=====//DESVIADA INICIADA//=====//");
-            if (direction == esquerda) executarEstrategia(desviadaEsquerda);
-            else executarEstrategia(desviadaDireita);
+        case 'r':
+            SerialBT.println("//=====//CURVINHA INICIADA//=====//");
+            if (direction == esquerda) executarEstrategia(curvinhaEsquerda);
+            else executarEstrategia(curvinhaDireita);
             break;
 
         // Em V
@@ -442,6 +467,13 @@ void estrategiaLutaBT(char comando) {
             SerialBT.println("//=====//GIRO (180 GRAUS) INICIADO//=====//");
             if (direction == esquerda) executarEstrategia(giroEsquerda);
             else executarEstrategia(giroDireita);
+            break;
+
+            // Costas: giro de 90°
+        case 'h':
+            SerialBT.println("//=====//GIRO (90 GRAUS) INICIADO//=====//");
+            if (direction == esquerda) executarEstrategia(girinhoEsquerda);
+            else executarEstrategia(girinhoDireita);
             break;
 
         // Foice

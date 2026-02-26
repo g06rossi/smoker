@@ -291,7 +291,8 @@ void verificarEstrategia(char comando) {
         case 'i': SerialBT.println("//=====//FRENTINHO SELECIONADO//=====//"); break;
         case 'b': SerialBT.println("//=====//COSTAS SELECIONADO//=====//"); break;
         case 'c': SerialBT.println("//=====//CURVAO SELECIONADO//=====//"); break;
-        case 'u': SerialBT.println("//=====//CURVINHA SELECIONADA//=====//"); break;
+        case 'u': SerialBT.println("//=====//CURVA SELECIONADA//=====//"); break;
+        case 'r': SerialBT.println("//=====//CURVINHA SELECIONADA//=====//"); break;
         case 'v': SerialBT.println("//=====//EM V SELECIONADO//=====//"); break;
         case 'n': SerialBT.println("//=====//EM VZINHO SELECIONADO//=====//"); break;
         case 'a': SerialBT.println("//=====//EM VZAO SELECIONADO//=====//"); break;

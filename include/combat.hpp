@@ -588,36 +588,37 @@ void curvaSearch() {
     switch (passoCurva) {
 
         case 0:
-            if (direction == direita) moverMotores(0, 180);
-            else moverMotores(180, 0);
+            if (direction == direita) moverMotores(0, 160);
+            else moverMotores(150, 0);
             tempoPassoCurva = millis();
             passoCurva = 1;
             break;
         
         case 1:
-            if (millis() - tempoPassoCurva >= 250) passoCurva = 2;
+            if (direction == direita && millis() - tempoPassoCurva >= 300) passoCurva = 2;
+            else if (direction == esquerda && millis() - tempoPassoCurva >= 350) passoCurva = 2;
             break;
 
         case 2:
-            if (direction == direita) moverMotores(64, -64);
-            else moverMotores(-64, 64);
+            if (direction == direita) moverMotores(100, -150);
+            else moverMotores(-120, 100);
             tempoPassoCurva = millis();
             passoCurva = 3;
             break;
         
         case 3:
-            if (millis() - tempoPassoCurva >= 200) passoCurva = 4;
+            if (millis() - tempoPassoCurva >= 280) passoCurva = 4;
             break;
 
         case 4:
-            if (direction == direita) moverMotores(-64, 64);
-            else moverMotores(64, -64);
+            if (direction == direita) moverMotores(-120, -100);
+            else moverMotores(100, -150);
             tempoPassoCurva = millis();
             passoCurva = 5;
             break;
         
         case 5:
-            if (millis() - tempoPassoCurva >= 200) passoCurva = 2;
+            if (millis() - tempoPassoCurva >= 280) passoCurva = 2;
             break; 
     }
 }
