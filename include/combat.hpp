@@ -10,7 +10,7 @@
 #include <defines.hpp>                        // Definicoes globais
 #include <move.hpp>                           // Funcoes de movivmentacao de motores
 
-#define velUltimoLado          64             // Velocidade de giro para o ultimo lado visto
+#define velUltimoLado          64             // Velocidade de giro para o ultimo lado visto12
 #define velLadoAtual           132            // Velocidade de giro para o lado atual
 #define velFrenteRapida        192            // Velocidade de avanco rapido
 #define velFrenteLenta         54             // Velocidade de avanco lento
@@ -25,6 +25,9 @@ volatile int numIteracoes      = 0;           // WOOD + SLOW | Iteracao de busca
 
 int avancosIteracao            = 0;           // BUSCA | Conta os avancos da iteracao
 int avancosTotais              = 0;           // BUSCA | Conta os avancos totais
+
+int passoCurva = 0;
+unsigned long tempoPassoCurva = 0;
 
 int leituraFrente              = 0;           // QUEBRADO | Qtde de leituras feitas com o sensorF
 bool primeiraSambada           = true;        // QUEBRADO | Primeiro passo da movimentacao frontal
@@ -577,166 +580,45 @@ void buscaWoodpecker() {
 
 #pragma endregion
 
-//========================================//SLOW SEARCH//========================================//
+//========================================//CURVA SEARCH//========================================//
 
-#pragma region SLOW SEARCH
+#pragma region CURVA SEARCH
 
-void slowSearch() {
+void curvaSearch() {
+    switch (passoCurva) {
 
-/*
-
-    static int passoSearch = 0;
-    static unsigned long tempoPassoSearch = 0;
-
-    modoFurtivo = false; xTaskNotifyGive(swSensorHandle);
-
-    switch(passoSearch) {
         case 0:
-            moverMotores(200, 200);
-            tempoPassoSearch = millis();
-            passoSearch = 1;
+            if (direction == direita) moverMotores(0, 180);
+            else moverMotores(180, 0);
+            tempoPassoCurva = millis();
+            passoCurva = 1;
             break;
-
+        
         case 1:
-            if (millis() - tempoPassoSearch > 150) passoSearch = 2;
+            if (millis() - tempoPassoCurva >= 250) passoCurva = 2;
             break;
 
         case 2:
-            moverMotores(0, 0);
-            tempoPassoSearch = millis();
-            passoSearch = 3;
+            if (direction == direita) moverMotores(64, -64);
+            else moverMotores(-64, 64);
+            tempoPassoCurva = millis();
+            passoCurva = 3;
             break;
-
+        
         case 3:
-            if (millis() - tempoPassoSearch > 75) passoSearch = 4;
+            if (millis() - tempoPassoCurva >= 200) passoCurva = 4;
             break;
 
         case 4:
-            moverMotores(-200, 200);
-            tempoPassoSearch = millis();
-            passoSearch = 5;
+            if (direction == direita) moverMotores(-64, 64);
+            else moverMotores(64, -64);
+            tempoPassoCurva = millis();
+            passoCurva = 5;
             break;
-
+        
         case 5:
-            if (millis() - tempoPassoSearch > 75) passoSearch = 6;
-            break;
-
-        case 6:
-            moverMotores(200, -200);
-            tempoPassoSearch = millis();
-            passoSearch = 7;
-            break;
-
-        case 7:
-            if (millis() - tempoPassoSearch > 150) passoSearch = 8;
-            break;
-
-        case 8:
-            moverMotores(-200, 200);
-            tempoPassoSearch = millis();
-            passoSearch = 9;
-            break;
-
-        case 9:
-            if (millis() - tempoPassoSearch > 75) passoSearch = 10;
-            break;
-                
-        case 10:
-            moverMotores(0, 0);
-            tempoPassoSearch = millis();
-            passoSearch = 11;
-            break;
-
-        case 11:
-            if (millis() - tempoPassoSearch > 150) {
-                numIteracoes++;
-                passoSearch = 0;
-            }
-            break;
-    }
-
-    // Modos recuados para ter cuidado ja que nao encontrou o adversario no limite de iteracoes
-    if ((numIteracoes > maxIteracoesS) && (modoLuta != giro)) modoLuta = defesa;
-
-    // Modo de luta de Giro mantem JSumos desligados
-    if (modoFurtivo && (modoLuta != giro)) { 
-        modoFurtivo = false; 
-        xTaskNotifyGive(swSensorHandle); 
-    }
-
-*/
-
-    static int passoBusca = 0;
-    static unsigned long tempoPassoBusca = 0;
-
-    // Gira para a esquerda
-    if (((!modoFurtivo) && (valueJsumoE && !valueJsumoF && !valueJsumoD)) ||
-        ((modoFurtivo) && (!valueJsumoD))) 
-    {
-        moverMotores(-velLadoAtual, velLadoAtual);
-        passoBusca = 0;                      // Reinicia a logica de busca
-        avancosIteracao = 0;                  // Reinicia a contagem de avancos da iteracao
-        return;
-
-    // Gira para a direita
-    } else if (((!modoFurtivo) && (valueJsumoD && !valueJsumoF && !valueJsumoE)) ||
-        ((modoFurtivo) && (!valueJsumoE))) 
-    {
-        moverMotores(velLadoAtual, -velLadoAtual);
-        passoBusca = 0;                      // Reinicia a logica de busca
-        avancosIteracao = 0;                  // Reinicia a contagem de avancos da iteracao
-        return;
-
-    } else if (((!modoFurtivo) && (valueJsumoF)) ||  
-        ((modoFurtivo) && (valueJsumoE + valueJsumoF + valueJsumoD == 3))) 
-    {
-        // Maquina de estados se nao houver curva
-        switch (passoBusca) {
-            case 0:                           // Passo 1: Avancar por 50ms
-                moverMotores(velFrenteLenta, velFrenteLenta);
-                tempoPassoBusca = millis();
-                passoBusca = 1;
-                break;
-
-            case 1:                           // Passo 2: Esperar os 50ms terminarem
-                if (millis() - tempoPassoBusca > 125) passoBusca = 2;
-                break;
-
-            case 2:                           // Passo 3: Parar por 500ms
-                moverMotores(0, 0);
-                tempoPassoBusca = millis();
-                passoBusca = 3;
-                break;
-
-            case 3:                           // Passo 4: Esperar os 500ms terminarem
-                if (millis() - tempoPassoBusca > 1000) {
-                    passoBusca = 0;          // Reinicia a sequencia
-                    avancosIteracao++;        // Acresce a contagem de avancos da iteracao
-                    avancosTotais++;          // Acresce a contagem de avancos totais
-                }
-                break;
-        }
-
-    } else {                                   // Se nao ve o inimigo
-        switch (ultimoLado) {             // Procura o inimigo no ultimo lado visto
-            case vistoEsquerda:
-                moverMotores(-velUltimoLado, velUltimoLado);
-                passoBusca = 0;               // Reinicia a logica de busca
-                avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
-                return;
-               
-            case vistoDireita:
-                moverMotores(velUltimoLado, -velUltimoLado);
-                passoBusca = 0;               // Reinicia a logica de busca
-                avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
-                return;
-              
-            default:                      // Se nunca viu, gira para tentar encontrar
-                moverMotores(velUltimoLado, -velUltimoLado);
-                passoBusca = 0;               // Reinicia a logica de busca
-                avancosIteracao = 0;           // Reinicia a contagem de avancos da iteracao
-                return;
-        }
+            if (millis() - tempoPassoCurva >= 200) passoCurva = 2;
+            break; 
     }
 }
 

@@ -169,7 +169,7 @@ VAMPETA       18     19     17     16
 #define JSUMO_F_PIN            34             //  AUTO | JSumo frontal ESP32 IO34
 #define JSUMO_E_PIN            39             //  AUTO | JSumo esquerdo ESP32 IO39
 
-#define SENSOR_IR_D            4              //  AUTO | Sensor IR direito ESP32 IO4
+#define SENSOR_IR_D            27              //  AUTO | Sensor IR direito ESP32 IO4
 #define SENSOR_IR_F            26             //  AUTO | Sensor IR frontal ESP32 IO23
 #define SENSOR_IR_E            32             //  AUTO | Sensor IR esquerdo ESP32 IO5
 
@@ -223,7 +223,7 @@ enum ModoLuta {                               //  AUTO | Define qual o modo de l
    giro,
    quebrado,
    woodpecker,
-   slowsearch
+   curvasearch
 };
 
 enum Direction {                              //  AUTO | Direcao de movimentacao do robo
@@ -244,7 +244,7 @@ struct StrategyStep {                         //  AUTO | Struct para os comandos
    int delayMs;
 };
 
-SelecionouModo selecionouModo  = radioControlado;
+SelecionouModo selecionouModo  = naoSelecionado;
 ModoLuta modoLuta              = ataque;
 Direction direction            = esquerda;
 DirecaoAdversario ultimoLado   = nuncaVisto;

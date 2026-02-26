@@ -80,9 +80,9 @@ void switchSensor(void *pvParameters) {
 void IRAM_ATTR readSensors() {
     if(JSumoLigado) {
         portENTER_CRITICAL_ISR(&sensorMux);   // Indica estrutura critica: prioridade de execucao
-        valueJsumoF = !(GPIO.in1.val >> (JSUMO_F_PIN - 32)) & 0x1;
-        valueJsumoD = !(GPIO.in1.val >> (JSUMO_D_PIN - 32)) & 0x1;
-        valueJsumoE = !(GPIO.in1.val >> (JSUMO_E_PIN - 32)) & 0x1;
+        valueJsumoF = (GPIO.in1.val >> (JSUMO_F_PIN - 32)) & 0x1;
+        valueJsumoD = (GPIO.in1.val >> (JSUMO_D_PIN - 32)) & 0x1;
+        valueJsumoE = (GPIO.in1.val >> (JSUMO_E_PIN - 32)) & 0x1;
         portEXIT_CRITICAL_ISR(&sensorMux);    // Fim da estrutura critica
     } else {
         portENTER_CRITICAL_ISR(&sensorMux);   // Indica estrutura critica: prioridade de execucao
@@ -122,6 +122,7 @@ void handleIRCommand(void *pvParameters) {
                 Serial.println("Pronto");
                 SerialBT.println("Pronto");
                 ready = true;                 // Pronto para iniciar a movimentacao
+                xTaskNotifyGive(swSensorHandle);          // Entra no modo furtivo
                 AnnihilationModeLeds();       // LEDs vermelhos para a sede de ser campeao
                 blinkLED(1, 25);              // Pisca o LED builtin se recebe IR 1
             }
@@ -167,6 +168,12 @@ void combatLogicTask(void *pvParameters) {
             modoLuta = ataque;                // Entra no modo de Ataque
         }
 
+        if ((modoLuta == curvasearch && valueJsumoF == 1)  ||
+            (millis() - tempoCombat > 5000)
+        ) {
+            modoLuta = busca;
+        }
+
 //=======================================//Seleciona Modo//======================================//
 
         switch (modoLuta) {
@@ -188,8 +195,8 @@ void combatLogicTask(void *pvParameters) {
             case woodpecker:
                 buscaWoodpecker();            // FSM | Busca em Woodpecker
                 break;
-            case slowsearch:
-                slowSearch();                 // FSM | Busca em passos mais longos
+            case curvasearch:
+                curvaSearch();                 // FSM | Busca em passos mais longos
                 break;
             default:
                 modoAtaque();

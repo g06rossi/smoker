@@ -254,7 +254,7 @@ void printCommands() {
         "'G'        | Ativa o modo de giro\n"
         "'Q'        | Ativa o modo quebrado\n"
         "'W'        | Busca Woodpecker\n"
-        "'S'        | Slow Search\n"
+        "'C'        | Curva Search\n"
         "-----------|---------------------------------------\n"
         "'F'        | Ativa o modo furtivo\n"
         "'O'        | Desativa o modo furtivo\n"
@@ -416,9 +416,9 @@ void definicoesBaseBT(char comando) {
             modoLuta = woodpecker;
             SerialBT.printf("//=====//WOODPECKER ATIVADO//=====//\n");
             break;
-        case 'S':
-            modoLuta = slowsearch;
-            SerialBT.printf("//=====//SLOW SEARCH ATIVADO//=====//\n");
+        case 'C':
+            modoLuta = curvasearch;
+            SerialBT.printf("//=====//CURVA SEARCH ATIVADO//=====//\n");
             break;
 
 #pragma endregion
