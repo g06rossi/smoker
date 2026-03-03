@@ -70,6 +70,8 @@ void modoRC() {
             0, 200, 0,                        // LED 4
             0, 200, 0);                       // LED 5
 
+    directWriteLow(LED_PIN);
+
     while (ps5.isConnected()) {
         
         int velocidadeEsquerda = 0;           // Velocidade do motor esquerdo

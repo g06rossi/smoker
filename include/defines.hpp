@@ -244,7 +244,7 @@ struct StrategyStep {                         //  AUTO | Struct para os comandos
    int delayMs;
 };
 
-SelecionouModo selecionouModo  = naoSelecionado;
+SelecionouModo selecionouModo  = autonomo;
 ModoLuta modoLuta              = ataque;
 Direction direction            = esquerda;
 DirecaoAdversario ultimoLado   = nuncaVisto;
