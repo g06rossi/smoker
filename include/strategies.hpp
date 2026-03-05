@@ -327,6 +327,7 @@ const StrategyStep foiceDireita[] = {
 void executarEstrategia(const StrategyStep strategySequence[]) {
     // Lida com haste quando necessario
     if (hasteAbaixada) xTaskNotifyGive(openServoHandle);
+    xTaskNotifyGive(swSensorHandle);          // Entra no modo furtivo
 
     // Loop de passos -> sai do loop quando o delay for igual a 0
     for (int i = 0; strategySequence[i].delayMs > 0; ++i) {

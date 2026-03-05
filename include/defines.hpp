@@ -100,7 +100,7 @@ Definicao de pinos e configuracoes
 !INFO | Ultimos pinos conhecidos dos robos
 -----------------------------------
               LP     LN     RP     RN
-SMOKER        16     17     19     18
+SMOKER        17     16     19     18
 ARRUELA       17     16     19     18
 BRIGA         19     18     16     17
 FUEGO         19     18     16     17
@@ -111,8 +111,9 @@ TSUNAMI       17     16     18     19
 VAMPETA       18     19     17     16
 */
 
-#define LEFT_POS_PIN           16             //  DOIS | Ponte H M1 A_IN_2 ESP32 IO18
-#define LEFT_NEG_PIN           17             //  DOIS | Ponte H M1 A_IN_1 ESP32 IO19
+// Esquerdo invertido na última montagem (sem termo azul)
+#define LEFT_POS_PIN           17             //  DOIS | Ponte H M1 A_IN_2 ESP32 IO18
+#define LEFT_NEG_PIN           16             //  DOIS | Ponte H M1 A_IN_1 ESP32 IO19
 #define RIGHT_POS_PIN          19             //  DOIS | Ponte H M2 B_IN_2 ESP32 IO16
 #define RIGHT_NEG_PIN          18             //  DOIS | Ponte H M2 B_IN_1 ESP32 IO17
 
@@ -166,7 +167,7 @@ VAMPETA       18     19     17     16
 #define TRANSISTOR_SENSOR_PIN  25             //  AUTO | Transistor que desliga o IR
 
 #define JSUMO_D_PIN            36             //  AUTO | JSumo direito ESP32 IO36
-#define JSUMO_F_PIN            34             //  AUTO | JSumo frontal ESP32 IO34
+#define JSUMO_F_PIN            22             //  AUTO | JSumo frontal ESP32 IO34
 #define JSUMO_E_PIN            39             //  AUTO | JSumo esquerdo ESP32 IO39
 
 #define SENSOR_IR_D            27              //  AUTO | Sensor IR direito ESP32 IO4
@@ -244,7 +245,7 @@ struct StrategyStep {                         //  AUTO | Struct para os comandos
    int delayMs;
 };
 
-SelecionouModo selecionouModo  = autonomo;
+SelecionouModo selecionouModo  = radioControlado;
 ModoLuta modoLuta              = ataque;
 Direction direction            = esquerda;
 DirecaoAdversario ultimoLado   = nuncaVisto;

@@ -204,7 +204,7 @@ void lerSensores() {
 
     portENTER_CRITICAL_ISR(&sensorMux);       // Indica estrutura critica: prioridade de execucao
     for (int i = 0; i < 1000; ++i) {
-        sensorF += (GPIO.in1.val >> (JSUMO_F_PIN - 32)) & 0x1;
+        sensorF += ((GPIO.in >> JSUMO_F_PIN) & 0x1);
         sensorD += (GPIO.in1.val >> (JSUMO_D_PIN - 32)) & 0x1;
         sensorE += (GPIO.in1.val >> (JSUMO_E_PIN - 32)) & 0x1;
     }
