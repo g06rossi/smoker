@@ -437,7 +437,7 @@ void estrategiaLutaBT(char comando) {
 
         // Curvinha
         case 'r':
-            SerialBT.println("//=====//CURVAO INICIADO//=====//");
+            SerialBT.println("//=====//CURVINHA INICIADO//=====//");
             if (direction == esquerda) executarEstrategia(curvaoEsquerda);
             else executarEstrategia(curvaoDireita);
             break;
@@ -472,7 +472,7 @@ void estrategiaLutaBT(char comando) {
 
         // Lado: giro de 90°
         case 'h':
-            SerialBT.println("//=====//GIRO (90 GRAUS) INICIADO//=====//");
+            SerialBT.println("//=====//GIRINHO (90 GRAUS) INICIADO//=====//");
             if (direction == esquerda) executarEstrategia(girinhoEsquerda);
             else executarEstrategia(girinhoDireita);
             break;

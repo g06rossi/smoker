@@ -166,9 +166,9 @@ VAMPETA       18     19     17     16
 
 #define TRANSISTOR_SENSOR_PIN  25             //  AUTO | Transistor que desliga o IR
 
-#define JSUMO_D_PIN            36             //  AUTO | JSumo direito ESP32 IO36
-#define JSUMO_F_PIN            22             //  AUTO | JSumo frontal ESP32 IO34
-#define JSUMO_E_PIN            39             //  AUTO | JSumo esquerdo ESP32 IO39
+#define JSUMO_D_PIN            39             //  AUTO | JSumo direito ESP32 IO36
+#define JSUMO_F_PIN            36             //  AUTO | JSumo frontal ESP32 IO34
+#define JSUMO_E_PIN            34             //  AUTO | JSumo esquerdo ESP32 IO39
 
 #define SENSOR_IR_D            27              //  AUTO | Sensor IR direito ESP32 IO4
 #define SENSOR_IR_F            26             //  AUTO | Sensor IR frontal ESP32 IO23
