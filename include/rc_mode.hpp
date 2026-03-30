@@ -13,9 +13,9 @@
 #include <functions.hpp>                      // Funcoes auxiliares
 #include <move.hpp>                           // Funcoes de movivmentacao de motores
 
-#define coefAtenuacao          2.1            // Atenuacao da velocidade em curvas (deve ser FLOAT)
+#define coefAtenuacao          1.8            // Atenuacao da velocidade em curvas (deve ser FLOAT)
 #define coefReverse            0.9            // Coeficiente para balancear a re (deve ser FLOAT)
-#define limiteCurva            232.0          // Velocidade limite em curvas puras (deve ser FLOAT)
+#define limiteCurva            180.0          // Velocidade limite em curvas puras (deve ser FLOAT)
 
 volatile bool switchCxV        = false;       // Switch definido para controlar MACRO usado
 volatile bool velLimitada      = false;       // Switch definido pra limitar a velocidade do motor
