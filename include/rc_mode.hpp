@@ -7,15 +7,15 @@
 #ifndef RC_MODE_H
 #define RC_MODE_H
 
-#include <ps5Controller.h>                    // Biblioteca do controle do PS4
+#include <PS4Controller.h>                    // Biblioteca do controle do PS4
 
 #include <defines.hpp>                        // Definicoes globais
 #include <functions.hpp>                      // Funcoes auxiliares
 #include <move.hpp>                           // Funcoes de movivmentacao de motores
 
-#define coefAtenuacao          1.8            // Atenuacao da velocidade em curvas (deve ser FLOAT)
+#define coefAtenuacao          2.1            // Atenuacao da velocidade em curvas (deve ser FLOAT)
 #define coefReverse            0.9            // Coeficiente para balancear a re (deve ser FLOAT)
-#define limiteCurva            127.0          // Velocidade limite em curvas puras (deve ser FLOAT)
+#define limiteCurva            232.0          // Velocidade limite em curvas puras (deve ser FLOAT)
 
 volatile bool switchCxV        = false;       // Switch definido para controlar MACRO usado
 volatile bool velLimitada      = false;       // Switch definido pra limitar a velocidade do motor
@@ -30,10 +30,9 @@ bool primeiraAceleracao        = true;        // Indica que o robo nunca andou p
 /*
 !INFO | Ultimos MAC Addresses conhecidos dos robos
 -----------------------------------
-Atualizar RESSACA, SHENLONG e VAMPETA
 */
 
-const char* SMOKER             = "bc:c7:46:04:7a:78";
+const char* SMOKER             = "b0:cb:d8:04:6e:4d";
 const char* ARRUELA            = "98:83:89:e8:11:75";
 const char* BRIGA              = "5c:01:3b:74:15:20";
 const char* FUEGO              = "7c:9e:bd:fb:83:74";
@@ -41,7 +40,7 @@ const char* FUEGUITO           = "8c:4f:00:3d:27:00";
 const char* RESSACA            = "5c:96:66:c5:63:55";
 const char* SHENLONG           = "78:9b:3c:f6:29:fc";
 const char* TSUNAMI            = "f4:2d:c9:59:df:f1";
-const char* VAMPETA            = "f4:2d:c9:5a:14:38";
+const char* CAIPORA            = "a4:f0:0f:69:bc:c0";
 
 #pragma endregion
 
@@ -53,17 +52,17 @@ const char* VAMPETA            = "f4:2d:c9:5a:14:38";
 
 void modoRC() {
     // Tenta conectar ao controle PS4 e debuga conexao pelo Serial Monitor
-    if (ps5.begin(SMOKER)) {
+    if (PS4.begin(SMOKER)) {
         Serial.println("Bluetooth inicializado, aguardando controle...");
         xTaskNotifyGive(swSensorHandle);      // Entra no modo furtivo
 
-        while (!ps5.isConnected()) {
+        while (!PS4.isConnected()) {
             directWriteHigh(LED_PIN);
         }
     }
 
     Serial.println("Controle conectado!");
-    ps5.setLed(0, 200, 0);                    // Define a cor do LED para verde
+    PS4.setLed(0, 200, 0);                    // Define a cor do LED para verde
     setLeds(0, 200, 0,                        // LED 1
             0, 200, 0,                        // LED 2
             0, 200, 0,                        // LED 3
@@ -72,7 +71,7 @@ void modoRC() {
 
     directWriteLow(LED_PIN);
 
-    while (ps5.isConnected()) {
+    while (PS4.isConnected()) {
         
         int velocidadeEsquerda = 0;           // Velocidade do motor esquerdo
         int velocidadeDireita = 0;            // Velocidade do motor direito
@@ -87,7 +86,7 @@ void modoRC() {
 
 #pragma region TURBO
 
-        if (ps5.Cross()) {
+        if (PS4.Cross()) {
             moverMotores(255, 255);
             if (primeiraAceleracao) {
                 vTaskDelay(pdMS_TO_TICKS(1));
@@ -105,14 +104,14 @@ void modoRC() {
 #pragma region HASTE
 
         // Abre a haste
-        } else if (ps5.Square() && !hasteAbaixada) {
+        } else if (PS4.Square() && !hasteAbaixada) {
             vTaskDelay(pdMS_TO_TICKS(50));
             hasteAbaixada = true;
             xTaskNotifyGive(openServoHandle);
             vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
 
         // Fecha a haste
-        } else if (ps5.Square()) {
+        } else if (PS4.Square()) {
             vTaskDelay(pdMS_TO_TICKS(50));
             hasteAbaixada = false;
             xTaskNotifyGive(closeServoHandle);
@@ -125,13 +124,13 @@ void modoRC() {
 #pragma region SWITCH ESTRATEGIA
 
         // Permite movimentacao em V
-        } else if (ps5.Circle() && !switchCxV) {
+        } else if (PS4.Circle() && !switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(50));
             switchCxV = true;
             vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
         
         // Permite movimentacao em C
-        } else if (ps5.Circle()) {
+        } else if (PS4.Circle()) {
             vTaskDelay(pdMS_TO_TICKS(50));
             switchCxV = false;
             vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
@@ -143,25 +142,25 @@ void modoRC() {
 #pragma region SWITCH HASTE
 
         // Proxima aceleracao abaixa a haste
-        } else if (ps5.Up() && !primeiraAceleracao) {
+        } else if (PS4.Up() && !primeiraAceleracao) {
             vTaskDelay(pdMS_TO_TICKS(50));
             primeiraAceleracao = true;
             vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
 
         // Deixa haste levantada
-        } else if (ps5.Up()) {
+        } else if (PS4.Up()) {
             vTaskDelay(pdMS_TO_TICKS(50));
             primeiraAceleracao = false;
             vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras 
 
         // Força a haste
-        } else if (ps5.Down() && !hasteForcada) {
+        } else if (PS4.Down() && !hasteForcada) {
             vTaskDelay(pdMS_TO_TICKS(50));
             hasteForcada = true;
             vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
         
         // Abaixa e desliga a haste
-        } else if (ps5.Down()) {
+        } else if (PS4.Down()) {
             vTaskDelay(pdMS_TO_TICKS(50));
             hasteForcada = false;
             vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
@@ -173,13 +172,13 @@ void modoRC() {
 #pragma region LIMITADOR
         
         // Limita a velocidade a 180
-        } else if (ps5.Triangle() && !velLimitada) {
+        } else if (PS4.Triangle() && !velLimitada) {
             velLimitada = true;
             limiteVelocidade = 180;           // Define o limite reduzido
             vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
         
         // Permite a velocidade de 255
-        } else if (ps5.Triangle()) {
+        } else if (PS4.Triangle()) {
             velLimitada = false;
             limiteVelocidade = 255;           // Restaura o limite maximo
             vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
@@ -195,7 +194,7 @@ void modoRC() {
 #pragma region MACRO EM V
 
         // Movimentacao em V para a esquerda
-        } else if (ps5.Left() > 0 && switchCxV) {
+        } else if (PS4.Left() > 0 && switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
             hasteAbaixada = true;
@@ -210,7 +209,7 @@ void modoRC() {
             moverMotores(0, 0);               // Para os motores
 
         // Movimentacao em V para a direita
-        } else if (ps5.Right() > 0 && switchCxV) {
+        } else if (PS4.Right() > 0 && switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
             hasteAbaixada = true;
@@ -231,7 +230,7 @@ void modoRC() {
 #pragma region MACRO DESVIADA
 
         // Movimentacao em C para a esquerda
-        } else if (ps5.Left() > 0 && !switchCxV) {
+        } else if (PS4.Left() > 0 && !switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
             hasteAbaixada = true;
@@ -244,7 +243,7 @@ void modoRC() {
             moverMotores(0, 0);               // Para os motores
 
         // Movimentacao em V para a direita
-        } else if (ps5.Right() > 0 && !switchCxV) {
+        } else if (PS4.Right() > 0 && !switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
             hasteAbaixada = true;
@@ -267,9 +266,9 @@ void modoRC() {
 #pragma region CURVAS PURAS
 
         } else {
-            r2 = ps5.R2Value();               // Armazena o valor de R2
-            l2 = ps5.L2Value();               // Armazena o valor de R2
-            direcao = ps5.LStickX();          // Armazena o valor em X do Direcional Esquerdo
+            r2 = PS4.R2Value();               // Armazena o valor de R2
+            l2 = PS4.L2Value();               // Armazena o valor de R2
+            direcao = PS4.LStickX();          // Armazena o valor em X do Direcional Esquerdo
 
             // Se nenhum gatilho estiver pressionado (considerando a zona morta)
             if (r2 <= zonaMorta && l2 <= zonaMorta) {
@@ -277,13 +276,19 @@ void modoRC() {
                 velocidadeDireita = 0;
 
                 // Se os gatilhos estao parados, verifica se o analogico quer girar
-                if (direcao < -zonaMorta) {          // Curva pra esquerda parado
-                    velocidadeEsquerda = -int(limiteCurva * (abs(direcao) / limiteCurva));
-                    velocidadeDireita = int(limiteCurva * (abs(direcao) / limiteCurva));
-                } else if (direcao > zonaMorta) {    // Curva pra direita parado
-                    velocidadeEsquerda = int(limiteCurva * (abs(direcao) / limiteCurva));
-                    velocidadeDireita = -int(limiteCurva * (abs(direcao) / limiteCurva));
-                }
+                    if (direcao < -zonaMorta) { // Curva pra esquerda parado
+					
+                        int velCurva = map(abs(direcao), zonaMorta, 128, 0, limiteCurva);
+                        velocidadeEsquerda = -velCurva;
+                        velocidadeDireita = velCurva;
+                    }
+                    else if (direcao > zonaMorta) { // Curva pra direita parado
+					
+                        int velCurva = map(direcao, zonaMorta, 127, 0, limiteCurva);
+                        velocidadeEsquerda = velCurva;
+                        velocidadeDireita = -velCurva;
+                    }
+
                 // Se nem gatilho nem analogico estiverem ativos, as velocidades continuam 0.
 
 #pragma endregion
