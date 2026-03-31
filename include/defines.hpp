@@ -123,6 +123,7 @@ VAMPETA       18     19     17     16
 #define RIGHT_NEG_CHANNEL      LEDC_CHANNEL_5 //  DOIS | Canal PWM negativo direito
 
 #define PWM_FREQ               500            //  DOIS | Frequencia para os motores (Hz)
+#define PWM_FREIO              255            //  DOIS | PWM de freio ativo dos motores
 #define PWM_RESOLUTION         8              //  DOIS | Resolucao de 8 bits
 #define PWM_ZERO_DELAY         30             //  DOIS | Tempo para Ponte H limpar PWM (µs)
 

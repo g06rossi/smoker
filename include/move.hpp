@@ -89,10 +89,10 @@ void stopMotors() {
 void brakeMotors() {
     portENTER_CRITICAL(&motorMux);            // Indica estrutura critica: prioridade de execucao
 
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_POS_CHANNEL, 255);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_NEG_CHANNEL, 255);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_POS_CHANNEL, 255);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_NEG_CHANNEL, 255);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_POS_CHANNEL, PWM_FREIO);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_NEG_CHANNEL, PWM_FREIO);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_POS_CHANNEL, PWM_FREIO);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_NEG_CHANNEL, PWM_FREIO);
 
     ledc_update_duty(LEDC_LOW_SPEED_MODE, RIGHT_POS_CHANNEL);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, RIGHT_NEG_CHANNEL);
