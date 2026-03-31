@@ -15,12 +15,12 @@
 
 #define coefAtenuacao          1.8            // Atenuacao da velocidade em curvas (deve ser FLOAT)
 #define coefReverse            0.9            // Coeficiente para balancear a re (deve ser FLOAT)
-#define limiteCurva            180.0          // Velocidade limite em curvas puras (deve ser FLOAT)
+#define limiteCurva            120.0          // Velocidade limite em curvas puras (deve ser FLOAT)
 
 volatile bool switchCxV        = false;       // Switch definido para controlar MACRO usado
 volatile bool velLimitada      = false;       // Switch definido pra limitar a velocidade do motor
 int limiteVelocidade           = 255;         // Limite de velocidade do motor
-int zonaMorta                  = 20;          // Zona desconsiderada do controle de PS4
+int zonaMorta                  = 10;          // Zona desconsiderada do controle de PS4
 volatile int r2                = 0;           // Valor do gatilho direito do PS4 (R2)
 volatile int l2                = 0;           // Valor do gatilho esquerdo do PS4 (L2)
 volatile int direcao           = 0;           // Valor do direcional esquerdo do PS4 em X (LStickX)
