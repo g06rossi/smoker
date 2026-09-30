@@ -110,7 +110,7 @@ void modoAUTO() {
 
     vTaskDelay(pdMS_TO_TICKS(500));           // Pequeno atraso
 
-    SerialBT.begin("Smoker");                 // !INFO | SMOKER, O MAIOR!
+    SerialBT.begin("Tsu Smoker Based");                 // !INFO | SMOKER, O MAIOR!
     Serial.printf("Bluetooth iniciado. Tentando conectar");
     validaSetup(1,1,1,1,1);                   // 0 vermelhos e 5 verdes
     vTaskDelay(pdMS_TO_TICKS(500));           // Pequeno atraso

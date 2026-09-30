@@ -326,7 +326,7 @@ const StrategyStep foiceDireita[] = {
 // Executa as estrategias sequenciais e personalizadas
 void executarEstrategia(const StrategyStep strategySequence[]) {
     // Lida com haste quando necessario
-    if (hasteAbaixada) xTaskNotifyGive(openServoHandle);
+    if (ladoAsa != asaLevantada) xTaskNotifyGive(openServoHandle);
     xTaskNotifyGive(swSensorHandle);          // Entra no modo furtivo
 
     // Loop de passos -> sai do loop quando o delay for igual a 0
@@ -495,7 +495,7 @@ void estrategiaLutaBT(char comando) {
         // Iterativo puro (inicia somente modo iterativo)
         case 'p':
             SerialBT.println("//=====//ITERATIVO PURO INICIADO//=====//");
-            if (hasteAbaixada) xTaskNotifyGive(openServoHandle);
+            if (ladoAsa != asaLevantada) xTaskNotifyGive(openServoHandle);
             if (modoFurtivo) xTaskNotifyGive(swSensorHandle);
             moverMotores(0, 0);
             break;
@@ -513,7 +513,7 @@ void estrategiaLutaBT(char comando) {
         // Caso padrao para nao ficar sem fazer nada se o caractere enviado for invalido
         default:
             SerialBT.println("//=====//ESTRATEGIA INVALIDA: INICIANDO DEFENSIVO//=====//");
-            if (hasteAbaixada) xTaskNotifyGive(openServoHandle);
+            if (ladoAsa != asaLevantada) xTaskNotifyGive(openServoHandle);
             if (modoFurtivo) xTaskNotifyGive(swSensorHandle);
             moverMotores(0, 0);
             break;

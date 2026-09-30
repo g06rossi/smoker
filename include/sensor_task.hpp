@@ -80,9 +80,9 @@ void switchSensor(void *pvParameters) {
 void IRAM_ATTR readSensors() {
     if(JSumoLigado) {
         portENTER_CRITICAL_ISR(&sensorMux);   // Indica estrutura critica: prioridade de execucao
-        valueJsumoF = ((GPIO.in >> JSUMO_F_PIN) & 0x1);
-        valueJsumoD = (GPIO.in1.val >> (JSUMO_D_PIN - 32)) & 0x1;
-        valueJsumoE = (GPIO.in1.val >> (JSUMO_E_PIN - 32)) & 0x1;
+        valueJsumoF = ((GPIO.in1.val >> (JSUMO_F_PIN - 32)) & 0x1);
+        valueJsumoE = ((GPIO.in >> JSUMO_D_PIN) & 0x1);
+        valueJsumoE = ((GPIO.in >> JSUMO_E_PIN) & 0x1);
         portEXIT_CRITICAL_ISR(&sensorMux);    // Fim da estrutura critica
     } else {
         portENTER_CRITICAL_ISR(&sensorMux);   // Indica estrutura critica: prioridade de execucao
@@ -150,27 +150,15 @@ void combatLogicTask(void *pvParameters) {
     for (;;) {                                // Define a logica de combate que sera ativada
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
         if(!running) continue;                // Trava de seguranca da logica
-        
+
 //================================//Condicoes de mudanca de modo//===============================//
 
         // GERAL | Se dois ou mais sensores detectam o inimigo, desativa o modo furtivo e ataca
         // BUSCA | Se os avancos (iter || tot) forem suficientes, desativa o modo furtivo e ataca
         // WOOD  | Se os avancos forem suficientes, desativa o modo furtivo e ataca
         // SLOW  | Se os avancos forem suficientes, desativa o modo furtivo e ataca
-        if ((valueJsumoF + valueJsumoE + valueJsumoD >= 4) ||  
-            (avancosIteracao > maxAvancosIteracao)         || 
-            (numIteracoes > maxIteracoesW)                 ||
-            (numIteracoes > maxIteracoesS)                 ||
-            (millis() - tempoCombat > 5000)
-        ) {
-            if(modoFurtivo) xTaskNotifyGive(swSensorHandle);
+        if ((millis() - tempoCombat) >= 4000) { 
             modoLuta = ataque;                // Entra no modo de Ataque
-        }
-
-        if ((modoLuta == curvasearch && valueJsumoF == 1)  ||
-            (millis() - tempoCombat > 5000)
-        ) {
-            modoLuta = busca;
         }
 
 //=======================================//Seleciona Modo//======================================//
@@ -228,7 +216,7 @@ instantanea da estrategia atual por uma de maior prioridade baseada em novas lei
 void startTimer() {
     sensorTimer = timerBegin(0, 80, true);    // Timer de 80 ticks
     timerAttachInterrupt(sensorTimer, &readSensors, true); // Qual funcao sera acordada
-    timerAlarmWrite(sensorTimer, 500, true);  // Definir tempo (µs) aqui
+    timerAlarmWrite(sensorTimer, 300, true);  // Definir tempo (µs) aqui
     timerAlarmEnable(sensorTimer);            // Ligar o timer
 }
 

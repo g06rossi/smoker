@@ -91,6 +91,8 @@ void setup() {
     // LEDs enderecaveis
     setupLeds();                              // Configura os LEDs enderecaveis
     validaSetup(0,0,0,0,0);                   // 5 vermelhos e 0 verdes
+    blinkLED(5, 25);
+    vTaskDelay(pdMS_TO_TICKS(1000));           // Pequeno atraso para protecao
 
     // Comunicacao por IR -> DEVE FICAR NO SETUP
     // Feedback automatico desativado -> Feedback LED configurado manualmente
@@ -98,6 +100,7 @@ void setup() {
     printActiveIRProtocols(&Serial);
     Serial.println("\n\n//=====//Setup IR feita//=====//");
     validaSetup(1,0,0,0,0);                   // 4 vermelhos e 1 verde
+    blinkLED(5, 25);
 
 //================================//Criacao da tarefa nos nucleos//==============================//
 
@@ -105,13 +108,17 @@ void setup() {
     Serial.println("//=====//Setup sensor feita//=====//");
     vTaskDelay(pdMS_TO_TICKS(500));           // Pequeno atraso para protecao
     validaSetup(1,1,0,0,0);                   // 3 vermelhos e 2 verdes
+    blinkLED(5, 25);
 
     setupMoveTask();                          // Configura as tarefas de motores
     Serial.println("//=====//Setup motor feita//=====//");
     xTaskNotifyGive(closeServoHandle);
     vTaskDelay(pdMS_TO_TICKS(500));           // Pequeno atraso para protecao
     validaSetup(1,1,1,0,0);                   // 2 vermelhos e 3 verdes
-
+    blinkLED(5, 25);
+    vTaskDelay(pdMS_TO_TICKS(500));           // Pequeno atraso para protecao
+    validaSetup(1,1,1,1,0);                   // 2 vermelhos e 3 verdes
+    blinkLED(5, 25);
     vTaskDelay(pdMS_TO_TICKS(500));           // Pequeno atraso para protecao
 }
 
@@ -136,6 +143,7 @@ void __init__() {
                 selecionouModo = autonomo;
                 Serial.println("\n//=====//Modo AUTO selecionado//=====//");
                 validaSetup(1,1,1,1,1);       // 1 vermelho e 4 verdes
+                blinkLED(5, 25);
                 continue;                     // Continua para a proxima iteracao
             }
             
@@ -144,6 +152,7 @@ void __init__() {
                 selecionouModo = radioControlado;
                 Serial.println("\n//=====//Modo RC selecionado//=====//");
                 validaSetup(1,1,1,1,1);       // 1 vermelho e 4 verdes
+                blinkLED(5, 25);
                 continue;                     // Continua para a proxima iteracao
             }
         }

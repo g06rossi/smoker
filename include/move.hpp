@@ -193,16 +193,22 @@ da pelo delay entre a abertura e o relaxamento do servo
 */
 void openServo(void *pvParameters) {
     for (;;) {
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        // Para a esquerda
+        if (ladoAsa = asaEsquerda) {
+            ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, angleToDuty(0));
+            ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
 
-        // Abre o servo
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, angleToDuty(180));
-        ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
+            vTaskDelay(pdMS_TO_TICKS(150));       // Tempo para garantir mov 90°. Datasheet -> 150ms
 
-        vTaskDelay(pdMS_TO_TICKS(150));       // Tempo para garantir mov 90°. Datasheet -> 150ms
+            ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, 0);
+            ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
+            
+        } else {
+            ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, angleToDuty(180));
+            ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
 
-        // Relaxa o servo
-        if (!hasteForcada) {
+            vTaskDelay(pdMS_TO_TICKS(150));       // Tempo para garantir mov 90°. Datasheet -> 150ms
+
             ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, 0);
             ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
         }
@@ -215,7 +221,7 @@ void closeServo(void *pvParameters) {
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
         // Fecha o servo
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, angleToDuty(0));
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, angleToDuty(90));
         ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
 
         vTaskDelay(pdMS_TO_TICKS(150));       // Tempo para garantir mov 90°. Datasheet -> 150ms

@@ -12,8 +12,8 @@
 
 #define velUltimoLado          64             // Velocidade de giro para o ultimo lado visto12
 #define velLadoAtual           132            // Velocidade de giro para o lado atual
-#define velFrenteRapida        192            // Velocidade de avanco rapido
-#define velFrenteLenta         54             // Velocidade de avanco lento
+#define velFrenteRapida        214            // Velocidade de avanco rapido
+#define velFrenteLenta         72             // Velocidade de avanco lento
 #define acrescimo              32             // Acrescimo de velocidade para um dos motores
 
 #define maxAvancosIteracao     4              // BUSCA | Limite de avancos por iteracao
@@ -209,13 +209,13 @@ void modoBusca() {
         // Maquina de estados se nao houver curva
         switch (passoBusca) {
             case 0:                           // Passo 1: Avancar por 50ms
-                moverMotores(velFrenteLenta, velFrenteLenta);
+                moverMotores(velFrenteRapida, velFrenteRapida);
                 tempoPassoBusca = millis();
                 passoBusca = 1;
                 break;
 
             case 1:                           // Passo 2: Esperar os 50ms terminarem
-                if (millis() - tempoPassoBusca > 125) passoBusca = 2;
+                if ((millis() - tempoPassoBusca) > 60) passoBusca = 2;
                 break;
 
             case 2:                           // Passo 3: Parar por 500ms
@@ -225,7 +225,7 @@ void modoBusca() {
                 break;
 
             case 3:                           // Passo 4: Esperar os 500ms terminarem
-                if (millis() - tempoPassoBusca > 1000) {
+                if ((millis() - tempoPassoBusca) > 1000) {
                     passoBusca = 0;          // Reinicia a sequencia
                     avancosIteracao++;        // Acresce a contagem de avancos da iteracao
                     avancosTotais++;          // Acresce a contagem de avancos totais
@@ -607,7 +607,7 @@ void curvaSearch() {
             break;
         
         case 3:
-            if (millis() - tempoPassoCurva >= 280) passoCurva = 4;
+            if ((millis() - tempoPassoCurva) >= 280) passoCurva = 4;
             break;
 
         case 4:
@@ -618,7 +618,7 @@ void curvaSearch() {
             break;
         
         case 5:
-            if (millis() - tempoPassoCurva >= 280) passoCurva = 2;
+            if ((millis() - tempoPassoCurva) >= 280) passoCurva = 2;
             break; 
     }
 }

@@ -204,9 +204,7 @@ void lerSensores() {
 
     portENTER_CRITICAL_ISR(&sensorMux);       // Indica estrutura critica: prioridade de execucao
     for (int i = 0; i < 1000; ++i) {
-        sensorF += ((GPIO.in >> JSUMO_F_PIN) & 0x1);
-        sensorD += (GPIO.in1.val >> (JSUMO_D_PIN - 32)) & 0x1;
-        sensorE += (GPIO.in1.val >> (JSUMO_E_PIN - 32)) & 0x1;
+        sensorE += ((GPIO.in >> JSUMO_E_PIN) & 0x1);
     }
     portEXIT_CRITICAL_ISR(&sensorMux);    // Fim da estrutura critica
 
@@ -245,9 +243,9 @@ void printCommands() {
         "'<'        | Movimento para o lado Esquerdo\n"
         "'>'        | Movimento para o lado Direito\n"
         "-----------|---------------------------------------\n"
-        "'H'        | Abaixa a haste\n"
-        "'P'        | Forca a haste\n"
-        "'L'        | Levanta a haste\n"
+        "'H'        | Haste pra esquerda\n"
+        "'P'        | Haste pra direita\n"
+        "'L'        | Haste levantada\n"
         "-----------|---------------------------------------\n"
         "'D'        | Ativa o modo de defesa\n"
         "'A'        | Ativa o modo de ataque\n"
@@ -334,7 +332,8 @@ void checkStrategy() {
     else SerialBT.printf("ATIVADO\n");
 
     SerialBT.printf("-> Haste: ");
-    if (hasteAbaixada) SerialBT.printf("ABAIXADA\n");
+    if (ladoAsa == asaEsquerda) SerialBT.printf("ESQUERDA\n");
+    else if (ladoAsa == asaDireita) SerialBT.printf("DIREITA\n");
     else SerialBT.printf("LEVANTADA\n");
 }
 
@@ -373,18 +372,18 @@ void definicoesBaseBT(char comando) {
 
 //==========================================//Hastes//===========================================//
 
-#pragma region HASTES
+#pragma region ASA
 
         case 'H':
-            hasteAbaixada = true;
-            SerialBT.printf("//=====//HASTE ABAIXADA//=====//\n");
+            ladoAsa = asaEsquerda;
+            SerialBT.printf("//=====//HASTE ESQUERDA//=====//\n");
             break;
         case 'P':
-            hasteForcada = true;
-            SerialBT.printf("//=====//HASTE FORCADA//=====//\n");
+            ladoAsa = asaDireita;
+            SerialBT.printf("//=====//HASTE DIREITA//=====//\n");
             break;
         case 'L':
-            hasteAbaixada = false;
+            ladoAsa = asaLevantada;
             SerialBT.printf("//=====//HASTE LEVANTADA//=====//\n");
             break;
 

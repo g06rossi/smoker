@@ -112,10 +112,10 @@ VAMPETA       18     19     17     16
 */
 
 // Esquerdo invertido na última montagem (sem termo azul)
-#define LEFT_POS_PIN           16             //  DOIS | Ponte H M1 A_IN_2 ESP32 IO18
-#define LEFT_NEG_PIN           17             //  DOIS | Ponte H M1 A_IN_1 ESP32 IO19
-#define RIGHT_POS_PIN          19             //  DOIS | Ponte H M2 B_IN_2 ESP32 IO16
-#define RIGHT_NEG_PIN          18             //  DOIS | Ponte H M2 B_IN_1 ESP32 IO17
+#define LEFT_POS_PIN           19             //  DOIS | Ponte H M1 A_IN_2 ESP32 IO18
+#define LEFT_NEG_PIN           18             //  DOIS | Ponte H M1 A_IN_1 ESP32 IO19
+#define RIGHT_POS_PIN          16             //  DOIS | Ponte H M2 B_IN_2 ESP32 IO16
+#define RIGHT_NEG_PIN          17             //  DOIS | Ponte H M2 B_IN_1 ESP32 IO17
 
 #define LEFT_POS_CHANNEL       LEDC_CHANNEL_6 //  DOIS | Canal PWM positivo esquerdo
 #define LEFT_NEG_CHANNEL       LEDC_CHANNEL_7 //  DOIS | Canal PWM negativo esquerdo
@@ -133,7 +133,7 @@ VAMPETA       18     19     17     16
 
 #pragma region PINOS SERVO
 
-#define SERVOMOTOR_PIN         5              //  DOIS | Servomotor da haste ESP32 porta 23
+#define SERVOMOTOR_PIN         32              //  DOIS | Servomotor da haste ESP32 porta 23
 
 #define SERVO_LEDC_CHANNEL     LEDC_CHANNEL_0 //  DOIS | Canal do PWM do servo
 #define SERVO_TIMER            LEDC_TIMER_0   //  DOIS | Timer do PWM do servo
@@ -167,11 +167,11 @@ VAMPETA       18     19     17     16
 
 #define TRANSISTOR_SENSOR_PIN  25             //  AUTO | Transistor que desliga o IR
 
-#define JSUMO_D_PIN            39             //  AUTO | JSumo direito ESP32 IO36
-#define JSUMO_F_PIN            22             //  AUTO | JSumo frontal ESP32 IO34
-#define JSUMO_E_PIN            34             //  AUTO | JSumo esquerdo ESP32 IO39
+#define JSUMO_D_PIN            22             //  AUTO | JSumo direito ESP32 IO36
+#define JSUMO_F_PIN            39             //  AUTO | JSumo frontal ESP32 IO34
+#define JSUMO_E_PIN            27            //  AUTO | JSumo esquerdo ESP32 IO39
 
-#define SENSOR_IR_D            27              //  AUTO | Sensor IR direito ESP32 IO4
+#define SENSOR_IR_D            27             //  AUTO | Sensor IR direito ESP32 IO4
 #define SENSOR_IR_F            26             //  AUTO | Sensor IR frontal ESP32 IO23
 #define SENSOR_IR_E            32             //  AUTO | Sensor IR esquerdo ESP32 IO5
 
@@ -181,7 +181,6 @@ VAMPETA       18     19     17     16
 //BRIEL ESTEVE AQUI
 #pragma region VARIAVEIS
 
-volatile bool hasteAbaixada    = false;       //  DOIS | Define se a haste do robo vai ser abaixada
 volatile bool hasteForcada     = true;        //  DOIS | Define se a haste deve ficar ligada aberta
 volatile bool valueJsumoF      = false;       //  AUTO | Definicao do Jsumo Frontal
 volatile bool valueJsumoE      = false;       //  AUTO | Definicao do Jsumo Esquerdo
@@ -240,6 +239,12 @@ enum DirecaoAdversario {                      //  AUTO | Direcao de movimentacao
    nuncaVisto
 };
 
+enum LadoAsa {                              //  AUTO | Direcao da asa do robo
+   asaEsquerda,
+   asaDireita,
+   asaLevantada
+};
+
 struct StrategyStep {                         //  AUTO | Struct para os comandos personalizados
    int speedLeft;
    int speedRight;
@@ -250,6 +255,7 @@ SelecionouModo selecionouModo  = radioControlado;
 ModoLuta modoLuta              = ataque;
 Direction direction            = esquerda;
 DirecaoAdversario ultimoLado   = nuncaVisto;
+LadoAsa ladoAsa                = asaLevantada;
 StrategyStep customStrategy    [MAX_STEPS];
 
 #pragma endregion

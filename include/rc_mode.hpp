@@ -32,10 +32,11 @@ bool primeiraAceleracao        = true;        // Indica que o robo nunca andou p
 -----------------------------------
 */
 
-const char* SMOKER             = "b0:cb:d8:04:6e:4d";
+const char* SMOKER             = "b0:cb:d8:04:6e:4c";
+const char* FUMACINHA          = "d4:e9:f4:e3:64:90";
 const char* ARRUELA            = "98:83:89:e8:11:75";
 const char* BRIGA              = "5c:01:3b:74:15:20";
-const char* FUEGO              = "7c:9e:bd:fb:83:74";
+const char* FUEGO              = "d4:e9:f4:e3:64:90";
 const char* FUEGUITO           = "8c:4f:00:3d:27:00";
 const char* RESSACA            = "5c:96:66:c5:63:55";
 const char* SHENLONG           = "78:9b:3c:f6:29:fc";
@@ -76,6 +77,13 @@ void modoRC() {
         int velocidadeEsquerda = 0;           // Velocidade do motor esquerdo
         int velocidadeDireita = 0;            // Velocidade do motor direito
 
+        if (primeiraAceleracao && (PS4.Cross() || PS4.R2Value() > zonaMorta)) {
+            xTaskNotifyGive(openServoHandle); // Abre a haste
+            ladoAsa = asaLevantada;
+            primeiraAceleracao = false;       // Trava para não rodar mais até o próximo boot
+            vTaskDelay(pdMS_TO_TICKS(50));    // Pequeno fôlego para o RTOS
+        }
+
 #pragma endregion
 
 //===============================================================================================//
@@ -88,34 +96,7 @@ void modoRC() {
 
         if (PS4.Cross()) {
             moverMotores(255, 255);
-            if (primeiraAceleracao) {
-                vTaskDelay(pdMS_TO_TICKS(1));
-                xTaskNotifyGive(openServoHandle);
-                hasteAbaixada = true;
-                primeiraAceleracao = false;
-                vTaskDelay(pdMS_TO_TICKS(50));
-            }
             continue;
-
-#pragma endregion
-
-//====================================//Controlador da Haste//===================================//
-
-#pragma region HASTE
-
-        // Abre a haste
-        } else if (PS4.Square() && !hasteAbaixada) {
-            vTaskDelay(pdMS_TO_TICKS(50));
-            hasteAbaixada = true;
-            xTaskNotifyGive(openServoHandle);
-            vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
-
-        // Fecha a haste
-        } else if (PS4.Square()) {
-            vTaskDelay(pdMS_TO_TICKS(50));
-            hasteAbaixada = false;
-            xTaskNotifyGive(closeServoHandle);
-            vTaskDelay(pdMS_TO_TICKS(200));   // Evita multiplas leituras
 
 #pragma endregion
 
@@ -197,7 +178,6 @@ void modoRC() {
         } else if (PS4.Left() > 0 && switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
-            hasteAbaixada = true;
             moverMotores(-255, 255);          // Gira para a esquerda
             vTaskDelay(pdMS_TO_TICKS(40));
             moverMotores(255, 255);           // Anda para frente
@@ -212,7 +192,6 @@ void modoRC() {
         } else if (PS4.Right() > 0 && switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
             xTaskNotifyGive(openServoHandle); // Abre o servomotor
-            hasteAbaixada = true;
             moverMotores(255, -255);          // Gira para a direita
             vTaskDelay(pdMS_TO_TICKS(40));
             moverMotores(255, 255);           // Anda para frente
@@ -232,8 +211,6 @@ void modoRC() {
         // Movimentacao em C para a esquerda
         } else if (PS4.Left() > 0 && !switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
-            xTaskNotifyGive(openServoHandle); // Abre o servomotor
-            hasteAbaixada = true;
             moverMotores(-255, 255);          // Gira para a direita
             vTaskDelay(pdMS_TO_TICKS(75));
             moverMotores(255, 100);         // Para tras
@@ -245,8 +222,6 @@ void modoRC() {
         // Movimentacao em V para a direita
         } else if (PS4.Right() > 0 && !switchCxV) {
             vTaskDelay(pdMS_TO_TICKS(10));    // Delay para garantir o fim da logica anterior
-            xTaskNotifyGive(openServoHandle); // Abre o servomotor
-            hasteAbaixada = true;
             moverMotores(255, -255);          // Gira para a direita
             vTaskDelay(pdMS_TO_TICKS(75));
             moverMotores(127, 255);         // Para tras
@@ -301,13 +276,6 @@ void modoRC() {
 
                 // Define a velocidade base (frente ou re)
                 if (r2 > zonaMorta) {                // Gatilho direito (frente)
-                    if (primeiraAceleracao) {
-                        vTaskDelay(pdMS_TO_TICKS(5));
-                        xTaskNotifyGive(openServoHandle);
-                        hasteAbaixada = true;
-                        primeiraAceleracao = false;
-                        vTaskDelay(pdMS_TO_TICKS(50));
-                    }
                     int velocidade = map(r2, zonaMorta, 255, 0, limiteVelocidade);
                     velocidadeEsquerda = velocidade;
                     velocidadeDireita = velocidade;
