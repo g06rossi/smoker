@@ -62,6 +62,12 @@ bool delayMsAttacked(unsigned long delayTime) {
 
 #pragma region SINAL DIGITAL
 
+// Leitura direta de GPIO para uso em ISR (suporta pinos 0-39)
+static inline bool IRAM_ATTR lerGPIO(uint8_t pino) {
+    if (pino < 32) return (GPIO.in >> pino) & 0x1;
+    return (GPIO.in1.val >> (pino - 32)) & 0x1;
+}
+
 // Funcao para definir um pino como HIGH
 void directWriteHigh(int pin) {
     if (pin < 32)
@@ -243,9 +249,8 @@ void printCommands() {
         "'<'        | Movimento para o lado Esquerdo\n"
         "'>'        | Movimento para o lado Direito\n"
         "-----------|---------------------------------------\n"
-        "'H'        | Haste pra esquerda\n"
-        "'P'        | Haste pra direita\n"
-        "'L'        | Haste levantada\n"
+        "'H'        | Haste aberta\n"
+        "'L'        | Haste fechada\n"
         "-----------|---------------------------------------\n"
         "'D'        | Ativa o modo de defesa\n"
         "'A'        | Ativa o modo de ataque\n"
@@ -332,9 +337,8 @@ void checkStrategy() {
     else SerialBT.printf("ATIVADO\n");
 
     SerialBT.printf("-> Haste: ");
-    if (ladoAsa == asaEsquerda) SerialBT.printf("ESQUERDA\n");
-    else if (ladoAsa == asaDireita) SerialBT.printf("DIREITA\n");
-    else SerialBT.printf("LEVANTADA\n");
+    if (abrirAsa) SerialBT.printf("ABERTA\n");
+    else SerialBT.printf("FECHADA\n");
 }
 
 #pragma endregion
@@ -375,16 +379,12 @@ void definicoesBaseBT(char comando) {
 #pragma region ASA
 
         case 'H':
-            ladoAsa = asaEsquerda;
-            SerialBT.printf("//=====//HASTE ESQUERDA//=====//\n");
-            break;
-        case 'P':
-            ladoAsa = asaDireita;
-            SerialBT.printf("//=====//HASTE DIREITA//=====//\n");
+            abrirAsa = true;
+            SerialBT.printf("//=====//HASTE ABERTA//=====//\n");
             break;
         case 'L':
-            ladoAsa = asaLevantada;
-            SerialBT.printf("//=====//HASTE LEVANTADA//=====//\n");
+            abrirAsa = false;
+            SerialBT.printf("//=====//HASTE FECHADA//=====//\n");
             break;
 
 #pragma endregion

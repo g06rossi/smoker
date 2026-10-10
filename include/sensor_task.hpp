@@ -80,15 +80,15 @@ void switchSensor(void *pvParameters) {
 void IRAM_ATTR readSensors() {
     if(JSumoLigado) {
         portENTER_CRITICAL_ISR(&sensorMux);   // Indica estrutura critica: prioridade de execucao
-        valueJsumoF = ((GPIO.in1.val >> (JSUMO_F_PIN - 32)) & 0x1);
-        valueJsumoE = ((GPIO.in >> JSUMO_D_PIN) & 0x1);
-        valueJsumoE = ((GPIO.in >> JSUMO_E_PIN) & 0x1);
+        valueJsumoF = lerGPIO(JSUMO_F_PIN);
+        valueJsumoD = lerGPIO(JSUMO_D_PIN);
+        valueJsumoE = lerGPIO(JSUMO_E_PIN);
         portEXIT_CRITICAL_ISR(&sensorMux);    // Fim da estrutura critica
     } else {
         portENTER_CRITICAL_ISR(&sensorMux);   // Indica estrutura critica: prioridade de execucao
-        valueJsumoF = !((GPIO.in >> SENSOR_IR_F) & 0x1);
-        valueJsumoD = !((GPIO.in >> SENSOR_IR_D) & 0x1);
-        valueJsumoE = !((GPIO.in1.val >> (SENSOR_IR_E - 32)) & 0x1);
+        valueJsumoF = !lerGPIO(SENSOR_IR_F);
+        valueJsumoD = !lerGPIO(SENSOR_IR_D);
+        valueJsumoE = !lerGPIO(SENSOR_IR_E);
         portEXIT_CRITICAL_ISR(&sensorMux);    // Fim da estrutura critica
     }
 
@@ -97,14 +97,53 @@ void IRAM_ATTR readSensors() {
 
     // Variavel para verificar se uma tarefa de maior prioridade foi despertada
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    // Notifica a SensorTask
+    // Dispara a leitura da linha e a logica de combate no mesmo ciclo
+    vTaskNotifyGiveFromISR(analogSensorHandle, &xHigherPriorityTaskWoken);
     vTaskNotifyGiveFromISR(combatLogicHandle, &xHigherPriorityTaskWoken);
     if (xHigherPriorityTaskWoken) {           // Se uma tarefa de maior prioridade foi despertada
         portYIELD_FROM_ISR();                 // Forca desligamento do robo (prioridade maior)
     }
 }
 
-#pragma endregion   
+#pragma endregion
+
+//=====================================//Sensores Analogicos//===================================//
+
+#pragma region SENSORES ANALOGICOS
+
+/*
+!INFO | Linha analogica
+-----------------------------------
+O ADC nao pode ser lido dentro da ISR, por isso a linha e lida nesta task, que a ISR acorda a cada
+ciclo de 300us. ADC abaixo de LINHA_TRESHOLD = linha branca. Os pinos precisam ser do ADC1
+(GPIO 32-39)
+
+Nao use analogRead aqui: no core Arduino 2.x ele refaz pinMode e atenuacao a cada chamada e pode
+passar de 300us. A task entao ocupa 100% do nucleo 0, a IDLE0 nao roda e o watchdog de tarefas
+reinicia o ESP. O ADC e configurado uma vez e lido com adc1_get_raw
+*/
+void analogSensorTask(void *pvParameters) {
+    adc1_channel_t canalLinhaE = (adc1_channel_t)digitalPinToAnalogChannel(LINHA_E_PIN);
+    adc1_channel_t canalLinhaD = (adc1_channel_t)digitalPinToAnalogChannel(LINHA_D_PIN);
+
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(canalLinhaE, ADC_ATTEN_DB_12);   // Mesma escala do analogRead padrao
+    adc1_config_channel_atten(canalLinhaD, ADC_ATTEN_DB_12);
+    adc_power_acquire();                      // ADC sempre ligado (evita glitch nos GPIO 36 e 39)
+
+    for (;;) {
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);   // Acordada pela ISR dos sensores
+        int64_t inicioCiclo = esp_timer_get_time();
+
+        valueLinhaE = adc1_get_raw(canalLinhaE) < LINHA_TRESHOLD;
+        valueLinhaD = adc1_get_raw(canalLinhaD) < LINHA_TRESHOLD;
+
+        // Protecao: se o ciclo ficou longo demais, cede o nucleo 0 para a IDLE0 alimentar o watchdog
+        if (esp_timer_get_time() - inicioCiclo > ADC_CICLO_LIMITE_US) vTaskDelay(pdMS_TO_TICKS(1));
+    }
+}
+
+#pragma endregion
 
 //================================//Interpreta controle remoto//=================================//
 
@@ -157,13 +196,25 @@ void combatLogicTask(void *pvParameters) {
         // BUSCA | Se os avancos (iter || tot) forem suficientes, desativa o modo furtivo e ataca
         // WOOD  | Se os avancos forem suficientes, desativa o modo furtivo e ataca
         // SLOW  | Se os avancos forem suficientes, desativa o modo furtivo e ataca
-        if ((millis() - tempoCombat) >= 4000) { 
+        if ((millis() - tempoCombat) >= ataqueForcadoMs && modoLuta != retorno) {
             modoLuta = ataque;                // Entra no modo de Ataque
+        }
+
+        // RETORNO DE LINHA | Prioridade sobre todos os modos de luta: evita sair do dohyo
+        if ((valueLinhaE || valueLinhaD) && modoLuta != retorno) {
+            if (valueLinhaE && !valueLinhaD) viuLinha = linhaESQ;
+            else if (valueLinhaD && !valueLinhaE) viuLinha = linhaDIR;
+            else viuLinha = linhaAMBAS;
+            modoAntesRetorno = modoLuta;      // O Retorno volta para o modo em que estava
+            modoLuta = retorno;
         }
 
 //=======================================//Seleciona Modo//======================================//
 
         switch (modoLuta) {
+            case retorno:
+                modoRetorno();                // FSM | Evita sair do dohyo
+                break;
             case ataque:
                 modoAtaque();                 // Ataca o adversario de forma rapida
                 break;
@@ -256,7 +307,17 @@ void setupSensorTask() {
         &swSensorHandle,                      // Handle
         PRO_CPU_NUM                           // Nucleo 0 onde a tarefa sera executada
     );
-    
+
+    xTaskCreatePinnedToCore(                  // Le a linha (analogica)
+        analogSensorTask,                     // Funcao da tarefa
+        "AnalogSensor",                       // Nome da tarefa
+        256 * 16,                             // Tamanho da pilha
+        nullptr,                              // Parametros
+        15,                                   // Prioridade 15
+        &analogSensorHandle,                  // Handle (a ISR notifica, criar antes do timer)
+        PRO_CPU_NUM                           // Nucleo 0 onde a tarefa sera executada
+    );
+
     xTaskCreatePinnedToCore(                  // Monitorar o sinal IR para iniciar a luta
         handleIRCommand,                      // Funcao da tarefa
         "HandleIRCommand",                    // Nome da tarefa

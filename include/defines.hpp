@@ -15,6 +15,7 @@
 
 #include "soc/gpio_struct.h"                   // DOIS | Acesso direto e rapido aos pinos GPIO
 #include "driver/ledc.h"                       // DOIS | Controle do periferico de PWM por hardware
+#include "driver/adc.h"                        // AUTO | Leitura direta do ADC1 (sensores de linha)
 
 #pragma endregion
 
@@ -31,6 +32,7 @@ TaskHandle_t openServoHandle   = NULL;        //  DOIS | Handle da task de abrir
 TaskHandle_t closeServoHandle  = NULL;        //  DOIS | Handle da task de fechar servo
 
 TaskHandle_t combatLogicHandle = NULL;        //  AUTO | Handle da task do sensor IR
+TaskHandle_t analogSensorHandle = NULL;       //  AUTO | Handle da task de leitura da linha
 TaskHandle_t stratLutaHandle   = NULL;        //  AUTO | Handle da task da estrategia inicial
 
 TaskHandle_t stopRobotHandle   = NULL;        //  AUTO | Handle da task de desligar robo
@@ -133,10 +135,17 @@ VAMPETA       18     19     17     16
 
 #pragma region PINOS SERVO
 
-#define SERVOMOTOR_PIN         32              //  DOIS | Servomotor da haste ESP32 porta 23
+#define SERVO_E_PIN            26             //  DOIS | Servomotor esquerdo ESP32 IO26
+#define SERVO_D_PIN            32             //  DOIS | Servomotor direito ESP32 IO32
 
-#define SERVO_LEDC_CHANNEL     LEDC_CHANNEL_0 //  DOIS | Canal do PWM do servo
-#define SERVO_TIMER            LEDC_TIMER_0   //  DOIS | Timer do PWM do servo
+#define SERVO_E_CHANNEL        LEDC_CHANNEL_0 //  DOIS | Canal do PWM do servo esquerdo
+#define SERVO_D_CHANNEL        LEDC_CHANNEL_1 //  DOIS | Canal do PWM do servo direito
+#define SERVO_TIMER            LEDC_TIMER_0   //  DOIS | Timer do PWM dos servos (compartilhado)
+#define NUM_SERVOS             2              //  DOIS | Numero de servomotores
+
+#define SERVO_E_ABERTO         0              //  DOIS | Angulo do servo esquerdo aberto
+#define SERVO_D_ABERTO         180            //  DOIS | Angulo do servo direito aberto
+#define SERVO_FECHADO          90             //  DOIS | Angulo dos dois servos fechados
 
 #define SERVO_FREQ_HZ          50             //  DOIS | Frequencia padrao do MG90S
 #define SERVO_RESOLUTION       16             //  DOIS | Resolucao de 16 bits para o canal
@@ -167,13 +176,19 @@ VAMPETA       18     19     17     16
 
 #define TRANSISTOR_SENSOR_PIN  25             //  AUTO | Transistor que desliga o IR
 
-#define JSUMO_D_PIN            22             //  AUTO | JSumo direito ESP32 IO36
-#define JSUMO_F_PIN            39             //  AUTO | JSumo frontal ESP32 IO34
-#define JSUMO_E_PIN            27            //  AUTO | JSumo esquerdo ESP32 IO39
+#define JSUMO_D_PIN            14             //  AUTO | JSumo direito ESP32 IO14
+#define JSUMO_F_PIN            4              //  AUTO | JSumo meio (frontal) ESP32 IO4
+#define JSUMO_E_PIN            5              //  AUTO | JSumo esquerdo ESP32 IO5
 
-#define SENSOR_IR_D            27             //  AUTO | Sensor IR direito ESP32 IO4
-#define SENSOR_IR_F            26             //  AUTO | Sensor IR frontal ESP32 IO23
-#define SENSOR_IR_E            32             //  AUTO | Sensor IR esquerdo ESP32 IO5
+#define SENSOR_IR_D            23             //  AUTO | Sensor IR direito ESP32 IO23
+#define SENSOR_IR_F            36             //  AUTO | Sensor IR meio (frontal) ESP32 IO36
+#define SENSOR_IR_E            27             //  AUTO | Sensor IR esquerdo ESP32 IO27
+
+// Linha e analogica: so pinos do ADC1 (GPIO 32-39). LINHA_TRESHOLD fica nos parametros do combat
+#define LINHA_D_PIN            39             //  AUTO | Sensor Linha direito ESP32 IO39
+#define LINHA_E_PIN            34             //  AUTO | Sensor Linha esquerdo ESP32 IO34
+
+#define ADC_CICLO_LIMITE_US    200            //  AUTO | Ciclo de ADC mais longo que isso cede 1 ms ao nucleo 0
 
 #pragma endregion
 
@@ -185,6 +200,8 @@ volatile bool hasteForcada     = true;        //  DOIS | Define se a haste deve 
 volatile bool valueJsumoF      = false;       //  AUTO | Definicao do Jsumo Frontal
 volatile bool valueJsumoE      = false;       //  AUTO | Definicao do Jsumo Esquerdo
 volatile bool valueJsumoD      = false;       //  AUTO | Definicao do Jsumo Direito
+volatile bool valueLinhaE      = false;       //  AUTO | Linha Esquerdo (1 = linha branca)
+volatile bool valueLinhaD      = false;       //  AUTO | Linha Direito (1 = linha branca)
 
 bool inicializado              = false;       //  DOIS | Flag para validar a inicializacao 
 bool isConfiguring             = false;       //  AUTO | Flag para controlar o modo de configuracao
@@ -192,6 +209,7 @@ bool running                   = false;       //  AUTO | Indica se o robo esta l
 bool ready                     = false;       //  AUTO | Usada para testar se o robo recebe IR
 bool seeing                    = false;       //  AUTO | Usada para indicar se o robo ve o outro
 bool modoFurtivo               = false;       //  AUTO | Usada para indicar se deve desligar Jsumo
+bool abrirAsa                  = false;       //  AUTO | Abre os servos no inicio da estrategia
 
 unsigned long tempoCombat = 0;
 
@@ -224,7 +242,8 @@ enum ModoLuta {                               //  AUTO | Define qual o modo de l
    giro,
    quebrado,
    woodpecker,
-   curvasearch
+   curvasearch,
+   retorno                                    //  Linha detectada: volta para dentro do dohyo
 };
 
 enum Direction {                              //  AUTO | Direcao de movimentacao do robo
@@ -239,10 +258,11 @@ enum DirecaoAdversario {                      //  AUTO | Direcao de movimentacao
    nuncaVisto
 };
 
-enum LadoAsa {                              //  AUTO | Direcao da asa do robo
-   asaEsquerda,
-   asaDireita,
-   asaLevantada
+enum ViuLinha {                               //  AUTO | Sensores de linha que dispararam o Retorno
+   linhaNADA,
+   linhaESQ,
+   linhaDIR,
+   linhaAMBAS
 };
 
 struct StrategyStep {                         //  AUTO | Struct para os comandos personalizados
@@ -251,12 +271,24 @@ struct StrategyStep {                         //  AUTO | Struct para os comandos
    int delayMs;
 };
 
+struct Servomotor {                           //  DOIS | Pino, canal PWM e angulos de cada servomotor
+   uint8_t pino;
+   ledc_channel_t canal;
+   int anguloAberto;
+   int anguloFechado;
+};
+
 SelecionouModo selecionouModo  = radioControlado;
 ModoLuta modoLuta              = ataque;
 Direction direction            = esquerda;
 DirecaoAdversario ultimoLado   = nuncaVisto;
-LadoAsa ladoAsa                = asaLevantada;
+ViuLinha viuLinha              = linhaNADA;
 StrategyStep customStrategy    [MAX_STEPS];
+
+Servomotor servos[NUM_SERVOS]  = {
+   {SERVO_E_PIN, SERVO_E_CHANNEL, SERVO_E_ABERTO, SERVO_FECHADO},
+   {SERVO_D_PIN, SERVO_D_CHANNEL, SERVO_D_ABERTO, SERVO_FECHADO}
+};
 
 #pragma endregion
 

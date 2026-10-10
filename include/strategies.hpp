@@ -10,6 +10,7 @@
 #include <defines.hpp>                        // Definicoes globais
 #include <functions.hpp>                      // Funcoes auxiliares
 #include <move.hpp>                           // Funcoes de movivmentacao de motores
+#include <combat.hpp>                         // Estado de luta (resetCombatState)
 
 #pragma endregion
 
@@ -326,7 +327,7 @@ const StrategyStep foiceDireita[] = {
 // Executa as estrategias sequenciais e personalizadas
 void executarEstrategia(const StrategyStep strategySequence[]) {
     // Lida com haste quando necessario
-    if (ladoAsa != asaLevantada) xTaskNotifyGive(openServoHandle);
+    if (abrirAsa) xTaskNotifyGive(openServoHandle);
     xTaskNotifyGive(swSensorHandle);          // Entra no modo furtivo
 
     // Loop de passos -> sai do loop quando o delay for igual a 0
@@ -495,7 +496,7 @@ void estrategiaLutaBT(char comando) {
         // Iterativo puro (inicia somente modo iterativo)
         case 'p':
             SerialBT.println("//=====//ITERATIVO PURO INICIADO//=====//");
-            if (ladoAsa != asaLevantada) xTaskNotifyGive(openServoHandle);
+            if (abrirAsa) xTaskNotifyGive(openServoHandle);
             if (modoFurtivo) xTaskNotifyGive(swSensorHandle);
             moverMotores(0, 0);
             break;
@@ -513,7 +514,7 @@ void estrategiaLutaBT(char comando) {
         // Caso padrao para nao ficar sem fazer nada se o caractere enviado for invalido
         default:
             SerialBT.println("//=====//ESTRATEGIA INVALIDA: INICIANDO DEFENSIVO//=====//");
-            if (ladoAsa != asaLevantada) xTaskNotifyGive(openServoHandle);
+            if (abrirAsa) xTaskNotifyGive(openServoHandle);
             if (modoFurtivo) xTaskNotifyGive(swSensorHandle);
             moverMotores(0, 0);
             break;
@@ -568,6 +569,7 @@ void estrategiaTask(void *pvParameters) {
     for(;;) {
         // Aguarda ser chamado
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        resetCombatState();                   // Reseta as variaveis de luta
         estrategiaLutaBT(strategy);           // Executa a estratégia
         tempoCombat = millis();
         running = true;                       // Ativa o robo

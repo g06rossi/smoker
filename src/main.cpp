@@ -88,6 +88,9 @@ void setup() {
     pinMode(JSUMO_E_PIN, INPUT);
     pinMode(JSUMO_D_PIN, INPUT);
 
+    pinMode(LINHA_D_PIN, INPUT);
+    pinMode(LINHA_E_PIN, INPUT);
+
     // LEDs enderecaveis
     setupLeds();                              // Configura os LEDs enderecaveis
     validaSetup(0,0,0,0,0);                   // 5 vermelhos e 0 verdes

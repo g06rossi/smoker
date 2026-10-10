@@ -79,7 +79,6 @@ void modoRC() {
 
         if (primeiraAceleracao && (PS4.Cross() || PS4.R2Value() > zonaMorta)) {
             xTaskNotifyGive(openServoHandle); // Abre a haste
-            ladoAsa = asaLevantada;
             primeiraAceleracao = false;       // Trava para não rodar mais até o próximo boot
             vTaskDelay(pdMS_TO_TICKS(50));    // Pequeno fôlego para o RTOS
         }

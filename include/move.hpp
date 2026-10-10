@@ -180,49 +180,55 @@ uint32_t angleToDuty(int angle) {
     return duty;
 }
 
-/* 
+// Leva cada servomotor ao seu angulo aberto ou fechado
+void posicionarServos(bool aberto) {
+    for (int i = 0; i < NUM_SERVOS; i++) {
+        int angulo = aberto ? servos[i].anguloAberto : servos[i].anguloFechado;
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, servos[i].canal, angleToDuty(angulo));
+        ledc_update_duty(LEDC_LOW_SPEED_MODE, servos[i].canal);
+    }
+}
+
+// Relaxa todos os servomotores (sem pulso, sem torque)
+void relaxarServos() {
+    for (int i = 0; i < NUM_SERVOS; i++) {
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, servos[i].canal, 0);
+        ledc_update_duty(LEDC_LOW_SPEED_MODE, servos[i].canal);
+    }
+}
+
+/*
 !INFO | Abertura do servomotor
 -----------------------------------
-A forma mais rapida de abrir o servomotor aqui seria definir o angulo como 180°, pois gera o maior
-"sinal de erro" interno possivel entre a posicao atual e a de destino. Em resposta, o servo aplica 
-potencia maxima ao seu motor para corrigir esse erro, resultando na maior velocidade de rotacao 
-durante todo o percurso.
+A forma mais rapida de abrir o servomotor aqui seria definir o angulo extremo (0° ou 180°), pois gera
+o maior "sinal de erro" interno possivel entre a posicao atual e a de destino. Em resposta, o servo
+aplica potencia maxima ao seu motor para corrigir esse erro, resultando na maior velocidade de
+rotacao durante todo o percurso. Por isso o esquerdo abre em 0° e o direito em 180°
 
 A limitacao do movimento se da pelos limitadores fisicos e a limitacao do tempo de acionamento se
 da pelo delay entre a abertura e o relaxamento do servo
 */
 void openServo(void *pvParameters) {
     for (;;) {
-        // Para a esquerda
-        if (ladoAsa = asaEsquerda) {
-            ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, angleToDuty(0));
-            ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
-            vTaskDelay(pdMS_TO_TICKS(150));       // Tempo para garantir mov 90°. Datasheet -> 150ms
+        // Abre os servos
+        posicionarServos(true);
 
-            ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, 0);
-            ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
-            
-        } else {
-            ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, angleToDuty(180));
-            ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
+        vTaskDelay(pdMS_TO_TICKS(150));       // Tempo para garantir mov 90°. Datasheet -> 150ms
 
-            vTaskDelay(pdMS_TO_TICKS(150));       // Tempo para garantir mov 90°. Datasheet -> 150ms
-
-            ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, 0);
-            ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
-        }
+        // Relaxa os servos se a haste nao estiver forcada
+        if (!hasteForcada) relaxarServos();
     }
 }
 
-// Fecha o servomotor
+// Fecha os servomotores
 void closeServo(void *pvParameters) {
     for (;;) {
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
-        // Fecha o servo
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL, angleToDuty(90));
-        ledc_update_duty(LEDC_LOW_SPEED_MODE, SERVO_LEDC_CHANNEL);
+        // Fecha os servos
+        posicionarServos(false);
 
         vTaskDelay(pdMS_TO_TICKS(150));       // Tempo para garantir mov 90°. Datasheet -> 150ms
     }
@@ -308,15 +314,18 @@ void setupLEDC_Servo() {
     };
     ledc_timer_config(&ledc_timer);           // Aplica a configuracao do timer
 
-    ledc_channel_config_t canal_servo = {
-        .gpio_num        = SERVOMOTOR_PIN,    // Pino para o servomotor
-        .speed_mode      = LEDC_LOW_SPEED_MODE, // Modo de velocidade baixa (para PWM comum)
-        .channel         = SERVO_LEDC_CHANNEL, // Canal para o servomotor
-        .timer_sel       = SERVO_TIMER,       // Usa o Timer 0 do LEDC
-        .duty            = 0,                 // Valor inicial do duty cycle
-        .hpoint          = 0                  // Deslocamento de fase
-    };
-    ledc_channel_config(&canal_servo);        // Aplica a configuracao
+    // Um canal por servomotor, todos no mesmo timer
+    for (int i = 0; i < NUM_SERVOS; i++) {
+        ledc_channel_config_t canal_servo = {
+            .gpio_num    = servos[i].pino,    // Pino do servomotor
+            .speed_mode  = LEDC_LOW_SPEED_MODE, // Modo de velocidade baixa (para PWM comum)
+            .channel     = servos[i].canal,   // Canal do servomotor
+            .timer_sel   = SERVO_TIMER,       // Usa o Timer 0 do LEDC
+            .duty        = 0,                 // Valor inicial do duty cycle
+            .hpoint      = 0                  // Deslocamento de fase
+        };
+        ledc_channel_config(&canal_servo);    // Aplica a configuracao
+    }
 }
 
 #pragma endregion
